@@ -1,7 +1,10 @@
-﻿namespace VocabHelper.WPF.Business.Services
+﻿
+using VocabHelper.Core;
+
+namespace VocabHelper.WPF.Business.Services
 {
     public interface ITranslationService
     {
-        string Translate(string text, string sourceLanguage, string targetLanguage);
+        Task<string> TranslateAsync(string text, LanguageId sourceLanguage, LanguageId targetLanguage);
     }
 }

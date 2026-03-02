@@ -3,6 +3,7 @@
     public enum LanguageId
     {
         Korean,
-        Indonesian
+        Indonesian,
+        English
     };
 }

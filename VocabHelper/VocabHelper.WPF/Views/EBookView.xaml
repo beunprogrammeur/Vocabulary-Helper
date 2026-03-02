@@ -11,6 +11,7 @@
             <RowDefinition Height="30px" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -34,9 +35,9 @@
                     <DataGridCheckBoxColumn Header="Ignore" Binding="{Binding IsIgnored}" />
                     <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" Width="Auto"/>
                     <DataGridTextColumn Header="Frequency" Binding="{Binding Frequency}" IsReadOnly="True" Width="Auto"/>
-                    <DataGridTextColumn Header="Word" Binding="{Binding Word}" />
+                    <DataGridTextColumn Header="Word" Binding="{Binding Word, UpdateSourceTrigger=PropertyChanged}" />
                     <DataGridTextColumn Header="Translation" Binding="{Binding WordTranslation}" />
-                    <DataGridTextColumn Header="Sentence" Binding="{Binding SentenceTranslation}" Width="*"/>
+                    <DataGridTextColumn Header="Sentence" Binding="{Binding Sentence}" Width="*"/>
                     <DataGridTextColumn Header="Translation" Binding="{Binding SentenceTranslation}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
@@ -49,5 +50,15 @@
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
+        <StatusBar Grid.Row="3" Grid.ColumnSpan="999">
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <Label>Translations</Label>
+                    <Label Content="{Binding CompletedTranslations}"></Label>
+                    <Label>/</Label>
+                    <Label Content="{Binding TotalTranslations}"></Label>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </UserControl>

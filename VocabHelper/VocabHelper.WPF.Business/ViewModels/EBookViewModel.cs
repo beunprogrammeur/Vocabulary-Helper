@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using VocabHelper.Core;
 using VocabHelper.WPF.Business.Models;
 using VocabHelper.WPF.Business.Services;
 
@@ -14,6 +15,9 @@ namespace VocabHelper.WPF.Business.ViewModels
         private readonly IFileSelectionService _fileSelectionService;
         private readonly IStemmerServiceFactory _stemmerServiceFactory;
 
+        [ObservableProperty] private LanguageId language;
+        [ObservableProperty] private int totalTranslations;
+        [ObservableProperty] private int completedTranslations;
         [ObservableProperty] private ObservableCollection<CardCandidateViewModel> cardCandidates = [];
         [ObservableProperty] private ObservableCollection<AnkiDeckViewModel> ankiDecks = [];
 
@@ -54,6 +58,7 @@ namespace VocabHelper.WPF.Business.ViewModels
             }
             var allWords = _ebookService.GetAllWords(result.File, false);
 
+            Language = result.Language.Value;
             IStemmerService stemmerService = _stemmerServiceFactory.GetStemmer(result.Language.Value);
             Dictionary<string, CardCandidateViewModel> stemmedWords = [];
             foreach (var word in allWords)
@@ -88,10 +93,36 @@ namespace VocabHelper.WPF.Business.ViewModels
         }
 
         [RelayCommand]
-        private async void TranslateCards()
+        private async Task TranslateCards()
         {
-            _translationService.Translate("apa kabar?", "id", "en");
+            var activeCandidates = cardCandidates.Where(x => !x.IsIgnored);
+            TotalTranslations = activeCandidates.Count();
+            CompletedTranslations = 0;
+
+            foreach (var candidate in activeCandidates)
+            {
+                if (string.IsNullOrEmpty(candidate.WordTranslation))
+                {
+                    candidate.WordTranslation =
+                        await _translationService.TranslateAsync(
+                            candidate.Word,
+                            Language,
+                            LanguageId.English);
+                    CompletedTranslations++;
+                }
+
+                if (string.IsNullOrEmpty(candidate.SentenceTranslation))
+                {
+                    
+                    candidate.SentenceTranslation =
+                        await _translationService.TranslateAsync(
+                            candidate.Sentence,
+                            Language,
+                            LanguageId.English);
+                }
+            }
         }
+
 
         [RelayCommand]
         private async void MarkCandidatesIgnoredFromDeck()
