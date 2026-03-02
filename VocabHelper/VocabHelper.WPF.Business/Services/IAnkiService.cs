@@ -1,9 +1,11 @@
 ﻿
+using VocabHelper.WPF.Business.Models;
+
 namespace VocabHelper.WPF.Business.Services
 {
     public interface IAnkiService
     {
-        Task<IReadOnlyCollection<object>> GetCards(string deck);
+        Task<IReadOnlyCollection<AnkiCard>> GetCards(string deck);
         Task<IReadOnlyCollection<string>> GetDecks();
     }
 }

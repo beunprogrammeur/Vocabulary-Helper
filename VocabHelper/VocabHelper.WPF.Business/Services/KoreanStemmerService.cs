@@ -4,7 +4,7 @@
     {
         public string Stem(string word)
         {
-            throw new NotImplementedException();
+            return word;
         }
     }
 }

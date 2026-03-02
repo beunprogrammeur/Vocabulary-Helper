@@ -12,5 +12,6 @@ namespace VocabHelper.WPF.Business.ViewModels
         [ObservableProperty] private string sentenceTranslation;
         [ObservableProperty] private ObservableCollection<string> variations = [];
         [ObservableProperty] private int index;
+        [ObservableProperty] private int frequency;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using VocabHelper.WPF.Business.Models;
 using VocabHelper.WPF.Business.Services;
 
 namespace VocabHelper.WPF.Business.ViewModels
@@ -51,10 +52,9 @@ namespace VocabHelper.WPF.Business.ViewModels
             {
                 return;
             }
-            var allWords = _ebookService.GetAllWords(result.File, true);
+            var allWords = _ebookService.GetAllWords(result.File, false);
 
             IStemmerService stemmerService = _stemmerServiceFactory.GetStemmer(result.Language.Value);
-
             Dictionary<string, CardCandidateViewModel> stemmedWords = [];
             foreach (var word in allWords)
             {
@@ -62,6 +62,7 @@ namespace VocabHelper.WPF.Business.ViewModels
 
                 if (stemmedWords.TryGetValue(stemmedWord, out CardCandidateViewModel candidate))
                 {
+                    candidate.Frequency++;
                     if (!candidate.Variations.Contains(word.Word.ToLower()))
                     {
                         candidate.Variations.Add(word.Word.ToLower());
@@ -74,7 +75,8 @@ namespace VocabHelper.WPF.Business.ViewModels
                         Word = stemmedWord,
                         Sentence = word.Sentence,
                         Index = word.Index,
-                        Variations = [stemmedWord]
+                        Variations = [stemmedWord],
+                        Frequency = 1
                     };
                 }
             }
@@ -89,6 +91,34 @@ namespace VocabHelper.WPF.Business.ViewModels
         private async void TranslateCards()
         {
             _translationService.Translate("apa kabar?", "id", "en");
+        }
+
+        [RelayCommand]
+        private async void MarkCandidatesIgnoredFromDeck()
+        {
+            string[] decksToSearch = AnkiDecks.Where(x => x.Match).Select(x => x.DeckName).ToArray();
+
+            Dictionary<string, AnkiCard> ankiCards = [];
+
+            foreach (string deck in decksToSearch)
+            {
+                var cards = await _ankiService.GetCards(deck);
+                foreach(var card in cards)
+                {
+                    if (!ankiCards.ContainsKey(card.SearchFieldValue.ToLower()))
+                    {
+                        ankiCards[card.SearchFieldValue.ToLower()] = card;
+                    }
+                }
+            }
+
+            foreach(var candidate in cardCandidates)
+            {
+                if (ankiCards.ContainsKey(candidate.Word.ToLower()))
+                {
+                    candidate.IsIgnored = true;
+                }
+            }
         }
     }
 }

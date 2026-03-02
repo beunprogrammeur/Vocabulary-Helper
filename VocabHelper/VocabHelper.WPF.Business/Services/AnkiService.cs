@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using VocabHelper.WPF.Business.Models;
 using VocabHelper.WPF.Business.Services;
 
 internal class AnkiService : IAnkiService
@@ -8,6 +9,12 @@ internal class AnkiService : IAnkiService
     {
         BaseAddress = new Uri("http://localhost:8765")
     };
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
 
     private async Task<T> SendRequestAsync<T>(string action, object? parameters = null)
     {
@@ -38,23 +45,23 @@ internal class AnkiService : IAnkiService
             throw new Exception($"AnkiConnect error: {error}");
 
         var resultJson = root.GetProperty("result").GetRawText();
-        return JsonSerializer.Deserialize<T>(resultJson)!;
+        return JsonSerializer.Deserialize<T>(resultJson, JsonOptions)!;
     }
 
     public Task<IReadOnlyCollection<string>> GetDecks()
         => SendRequestAsync<IReadOnlyCollection<string>>("deckNames");
 
-    public Task<IReadOnlyCollection<object>> GetCards(string deck) => GetCardIds(deck)
+    public Task<IReadOnlyCollection<AnkiCard>> GetCards(string deck) => GetCardIds(deck)
             .ContinueWith(idsTask =>
             {
                 var ids = idsTask.Result;
-                if (ids.Count == 0) return Task.FromResult<IReadOnlyCollection<object>>(Array.Empty<object>());
+                if (ids.Count == 0) return Task.FromResult<IReadOnlyCollection<AnkiCard>>(Array.Empty<AnkiCard>());
                 return GetCardDetails(ids);
             })
             .Unwrap();
     private Task<IReadOnlyCollection<long>> GetCardIds(string deck)
         => SendRequestAsync<IReadOnlyCollection<long>>("findCards", new { query = $"deck:\"{deck}\"" });
 
-    private Task<IReadOnlyCollection<object>> GetCardDetails(IEnumerable<long> ids)
-        => SendRequestAsync<IReadOnlyCollection<object>>("cardsInfo", new { cards = ids.ToArray() });
+    private Task<IReadOnlyCollection<AnkiCard>> GetCardDetails(IEnumerable<long> ids)
+        => SendRequestAsync<IReadOnlyCollection<AnkiCard>>("cardsInfo", new { cards = ids.ToArray() });
 }

@@ -25,12 +25,15 @@
             </MenuItem>
             <MenuItem Header="_Anki">
                 <MenuItem Header="Load Decks" Command="{Binding LoadAnkiDecksAsyncCommand}"/>
+                <MenuItem Header="Ignore cards from Match decks" Command="{Binding MarkCandidatesIgnoredFromDeckCommand}"/>
             </MenuItem>
         </Menu>
         <GroupBox Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Header="Book vocabulary">
-            <DataGrid ItemsSource="{Binding CardCandidates}" AutoGenerateColumns="False">
+            <DataGrid ItemsSource="{Binding CardCandidates}" AutoGenerateColumns="False" CanUserAddRows="false">
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Header="Ignore" Binding="{Binding IsIgnored}" />
+                    <DataGridTextColumn Header="Index" Binding="{Binding Index}" IsReadOnly="True" Width="Auto"/>
+                    <DataGridTextColumn Header="Frequency" Binding="{Binding Frequency}" IsReadOnly="True" Width="Auto"/>
                     <DataGridTextColumn Header="Word" Binding="{Binding Word}" />
                     <DataGridTextColumn Header="Translation" Binding="{Binding WordTranslation}" />
                     <DataGridTextColumn Header="Sentence" Binding="{Binding SentenceTranslation}" Width="*"/>
@@ -41,7 +44,7 @@
         <GroupBox Header="Anki Decks"  Grid.Row="1" >
             <DataGrid ItemsSource="{Binding AnkiDecks}" AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="Match" Binding="{Binding Match}" />
+                    <DataGridCheckBoxColumn Header="Match" Binding="{Binding Match, UpdateSourceTrigger=PropertyChanged}" />
                     <DataGridTextColumn Header="Name" Binding="{Binding DeckName}" Width="*" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
