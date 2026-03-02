@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VocabHelper.Core\VocabHelper.Core.csproj" />
     <ProjectReference Include="..\VocabHelper.WPF.Business\VocabHelper.WPF.Business.csproj" />
   </ItemGroup>
 

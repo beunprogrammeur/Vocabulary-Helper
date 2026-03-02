@@ -1,12 +1,7 @@
-﻿namespace VocabHelper.WPF.Business.Services
-{
-    // todo: potentially move to a Core project 
-    internal enum LanguageId
-    {
-        Korean,
-        Indonesian
-    };
+﻿using VocabHelper.Core;
 
+namespace VocabHelper.WPF.Business.Services
+{
     internal class StemmerServiceFactory : IStemmerServiceFactory
     {
         public IStemmerService GetStemmer(LanguageId languageId)

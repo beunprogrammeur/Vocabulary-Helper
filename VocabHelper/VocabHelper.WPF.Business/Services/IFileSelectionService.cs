@@ -1,7 +1,9 @@
-﻿namespace VocabHelper.WPF.Business.Services
+﻿using VocabHelper.Core;
+
+namespace VocabHelper.WPF.Business.Services
 {
     public interface IFileSelectionService
     {
-        bool OpenFile(out string path);
+        public (bool Success, LanguageId? Language, string? File) OpenFile();
     }
 }

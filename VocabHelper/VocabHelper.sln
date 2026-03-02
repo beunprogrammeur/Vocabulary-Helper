@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VocabHelper.WPF", "VocabHel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VocabHelper.WPF.Business", "VocabHelper.WPF.Business\VocabHelper.WPF.Business.csproj", "{9AC3C847-78E5-41AC-9BBB-98D6E086ECE1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sastrawi", "..\external\sastrawi\Sastrawi\sastrawi.csproj", "{4EC1C6F9-89B8-A41F-6FBE-9D63BB202B32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VocabHelper.Core", "VocabHelper.Core\VocabHelper.Core.csproj", "{1A6EF5EC-6F94-450E-A6ED-7AB00D380E35}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{9AC3C847-78E5-41AC-9BBB-98D6E086ECE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AC3C847-78E5-41AC-9BBB-98D6E086ECE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AC3C847-78E5-41AC-9BBB-98D6E086ECE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EC1C6F9-89B8-A41F-6FBE-9D63BB202B32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EC1C6F9-89B8-A41F-6FBE-9D63BB202B32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EC1C6F9-89B8-A41F-6FBE-9D63BB202B32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EC1C6F9-89B8-A41F-6FBE-9D63BB202B32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A6EF5EC-6F94-450E-A6ED-7AB00D380E35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A6EF5EC-6F94-450E-A6ED-7AB00D380E35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A6EF5EC-6F94-450E-A6ED-7AB00D380E35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A6EF5EC-6F94-450E-A6ED-7AB00D380E35}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

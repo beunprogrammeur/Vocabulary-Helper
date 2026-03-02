@@ -1,0 +1,3 @@
+[submodule "external/sastrawi"]
+	path = external/sastrawi
+	url = https://codeberg.org/iklabib/sastrawi.git

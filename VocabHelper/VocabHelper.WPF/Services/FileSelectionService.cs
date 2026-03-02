@@ -1,21 +1,20 @@
-﻿using VocabHelper.WPF.Business.Services;
+﻿using VocabHelper.Core;
+using VocabHelper.WPF.Business.Services;
 using VocabHelper.WPF.Windows;
 
 namespace VocabHelper.WPF.Services
 {
     internal class FileSelectionService : IFileSelectionService
     {
-        public bool OpenFile(out string path)
+        public (bool Success, LanguageId? Language, string? File) OpenFile()
         {
-            DragAndDropWindow window = new();
+            LoadEBookWindow window = new();
             if (window.ShowDialog() == true)
             {
-                path = window.FilePath;
-                return true;
+                return (true, window.Language.Value, window.FilePath);
             }
 
-            path = string.Empty;
-            return false;
+            return (false, null, null);
         }
     }
 }

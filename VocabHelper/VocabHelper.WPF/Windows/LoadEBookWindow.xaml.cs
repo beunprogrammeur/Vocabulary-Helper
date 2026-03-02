@@ -1,16 +1,31 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
+using VocabHelper.Core;
+using VocabHelper.WPF.Business.ViewModels;
 
 namespace VocabHelper.WPF.Windows
 {
     /// <summary>
     /// Interaction logic for DragAndDropWindow.xaml
     /// </summary>
-    public partial class DragAndDropWindow : Window
+    public partial class LoadEBookWindow : Window
     {
-        public string FilePath { get; private set; }
-        public DragAndDropWindow()
+        private LoadEBookViewModel ViewModel => (LoadEBookViewModel)DataContext;
+        public string FilePath  =>ViewModel.FilePath;
+        public LanguageId? Language => ViewModel.ChosenLanguage;
+        public bool Success => DialogResult == true;
+
+        public LoadEBookWindow()
         {
             InitializeComponent();
+            DataContext = App.Services.GetRequiredService<LoadEBookViewModel>();
+            ViewModel.WordSelectionComplete += OnWordSelectionComplete;
+        }
+
+        private void OnWordSelectionComplete(object? sender, EventArgs e)
+        {
+            DialogResult = true;
+            Close();
         }
 
         private void Window_DragOver(object sender, DragEventArgs e)
@@ -32,13 +47,11 @@ namespace VocabHelper.WPF.Windows
 
             if (epubPath == null)
             {
-                MessageBox.Show("Please drop an EPUB file.");
+                DialogResult = false;
                 return;
             }
 
-            FilePath = epubPath;
-            DialogResult = true;
-            Close();
+            ViewModel.FilePath = epubPath;
         }
     }
 }

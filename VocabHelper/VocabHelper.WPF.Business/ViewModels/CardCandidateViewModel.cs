@@ -10,6 +10,7 @@ namespace VocabHelper.WPF.Business.ViewModels
         [ObservableProperty] private string wordTranslation;
         [ObservableProperty] private string sentence;
         [ObservableProperty] private string sentenceTranslation;
-        [ObservableProperty] private ObservableCollection<string> wordForms = [];
+        [ObservableProperty] private ObservableCollection<string> variations = [];
+        [ObservableProperty] private int index;
     }
 }

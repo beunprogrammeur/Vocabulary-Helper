@@ -16,7 +16,7 @@ namespace VocabHelper.WPF.Business.ViewModels
         [ObservableProperty] private ObservableCollection<CardCandidateViewModel> cardCandidates = [];
         [ObservableProperty] private ObservableCollection<AnkiDeckViewModel> ankiDecks = [];
 
-        public EBookViewModel(ITranslationService translationService, 
+        public EBookViewModel(ITranslationService translationService,
             IAnkiService ankiSerivce, IEBookService ebookService, IFileSelectionService fileSelectionService,
             IStemmerServiceFactory stemmerServiceFactory)
         {
@@ -31,7 +31,7 @@ namespace VocabHelper.WPF.Business.ViewModels
         private async void LoadAnkiDecksAsync()
         {
             AnkiDecks.Clear();
-            foreach(string deck in await _ankiService.GetDecks())
+            foreach (string deck in await _ankiService.GetDecks())
             {
                 AnkiDecks.Add(new AnkiDeckViewModel() { DeckName = deck });
             }
@@ -46,19 +46,42 @@ namespace VocabHelper.WPF.Business.ViewModels
         [RelayCommand]
         private void LoadEBook()
         {
-            if (_fileSelectionService.OpenFile(out string path))
+            var result = _fileSelectionService.OpenFile();
+            if (!result.Success)
             {
-                ClearData();
-                var words = _ebookService.GetAllWords(path, true);
-                // TODO: do something with a stemmer to reduce the amount of entries.
-                foreach(var entry in words)
+                return;
+            }
+            var allWords = _ebookService.GetAllWords(result.File, true);
+
+            IStemmerService stemmerService = _stemmerServiceFactory.GetStemmer(result.Language.Value);
+
+            Dictionary<string, CardCandidateViewModel> stemmedWords = [];
+            foreach (var word in allWords)
+            {
+                var stemmedWord = stemmerService.Stem(word.Word.ToLower());
+
+                if (stemmedWords.TryGetValue(stemmedWord, out CardCandidateViewModel candidate))
                 {
-                    cardCandidates.Add(new CardCandidateViewModel()
+                    if (!candidate.Variations.Contains(word.Word.ToLower()))
                     {
-                        Word = entry.Word,
-                        Sentence = entry.Sentence,
-                    });
+                        candidate.Variations.Add(word.Word.ToLower());
+                    }
                 }
+                else
+                {
+                    stemmedWords[stemmedWord] = new CardCandidateViewModel()
+                    {
+                        Word = stemmedWord,
+                        Sentence = word.Sentence,
+                        Index = word.Index,
+                        Variations = [stemmedWord]
+                    };
+                }
+            }
+
+            foreach (var candidate in stemmedWords.Values.OrderBy(x => x.Index))
+            {
+                CardCandidates.Add(candidate);
             }
         }
 

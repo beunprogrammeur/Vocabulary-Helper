@@ -14,4 +14,9 @@
     <PackageReference Include="VersOne.Epub" Version="3.3.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\external\sastrawi\Sastrawi\sastrawi.csproj" />
+    <ProjectReference Include="..\VocabHelper.Core\VocabHelper.Core.csproj" />
+  </ItemGroup>
+
 </Project>

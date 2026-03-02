@@ -25,6 +25,7 @@ namespace VocabHelper.WPF
             services.AddTransient<MainViewModel>();
             services.AddTransient<EBookViewModel>();
             services.AddTransient<CardCandidateViewModel>();
+            services.AddTransient<LoadEBookViewModel>();
 
             // Build the DI container
             Services = services.BuildServiceProvider();
