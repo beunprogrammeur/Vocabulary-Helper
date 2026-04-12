@@ -11,7 +11,7 @@ namespace VocabHelper.WPF.Windows
     public partial class LoadEBookWindow : Window
     {
         private LoadEBookViewModel ViewModel => (LoadEBookViewModel)DataContext;
-        public string FilePath  =>ViewModel.FilePath;
+        public string FilePath => ViewModel.FilePath;
         public LanguageId? Language => ViewModel.ChosenLanguage;
         public bool Success => DialogResult == true;
 

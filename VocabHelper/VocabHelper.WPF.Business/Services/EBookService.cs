@@ -7,7 +7,7 @@ namespace VocabHelper.WPF.Business.Services
 {
     internal class EBookService : IEBookService
     {
-        public IEnumerable<EBookWord> GetAllWords(string path, bool removeDuplicates)
+        public IEnumerable<EBookWordModel> GetAllWords(string path, bool removeDuplicates)
         {
             if (!File.Exists(path))
             {
@@ -18,7 +18,7 @@ namespace VocabHelper.WPF.Business.Services
             Regex regexWord = new("[A-Za-z-]+");
             Regex regexSentence = new("([^.!?]+)[.!?]", RegexOptions.Singleline);
 
-            List<EBookWord> words = [];
+            List<EBookWordModel> words = [];
 
             int index = 0;
             // open the "files" in the book, where the text is
@@ -38,7 +38,7 @@ namespace VocabHelper.WPF.Business.Services
                     foreach (Match matchWord in regexWord.Matches(sentence))
                     {
                         string word = matchWord.Value;
-                        words.Add(new EBookWord()
+                        words.Add(new EBookWordModel()
                         {
                             Word = word,
                             Sentence = sentence,
@@ -55,5 +55,45 @@ namespace VocabHelper.WPF.Business.Services
 
             return words.DistinctBy(x => x.Word);
         }
+
+        public IEnumerable<EBookWordModel> GetAllWordsFromText(string text, bool removeDuplicates)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return Enumerable.Empty<EBookWordModel>();
+
+            Regex regexWord = new("[A-Za-z-]+");
+            Regex regexSentence = new("([^.!?]+)[.!?]", RegexOptions.Singleline);
+
+            List<EBookWordModel> words = new();
+            int index = 0;
+
+            // Collapse whitespace (same as your EPUB version)
+            string normalized = Regex.Replace(text, @"\s+", " ");
+
+            // Extract sentences
+            foreach (Match matchSentence in regexSentence.Matches(normalized))
+            {
+                string sentence = matchSentence.Value;
+
+                // Extract words inside each sentence
+                foreach (Match matchWord in regexWord.Matches(sentence))
+                {
+                    string word = matchWord.Value;
+
+                    words.Add(new EBookWordModel
+                    {
+                        Word = word,
+                        Sentence = sentence,
+                        Index = index++
+                    });
+                }
+            }
+
+            if (!removeDuplicates)
+                return words;
+
+            return words.DistinctBy(x => x.Word);
+        }
+
     }
 }

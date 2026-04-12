@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="VocabHelper.WPF.Views.MessageBoxView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VocabHelper.WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Content="{Binding Message}" />
+        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="999" Content="OK" Command="{Binding ButtonOkCommand}" Visibility="{Binding ButtonOkVisible, Converter={StaticResource BooleanToVisibilityConverter}}" IsEnabled="{Binding ButtonOkVisible}" />
+        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Content="Yes" Command="{Binding ButtonYesCommand}" Visibility="{Binding ButtonYesVisible, Converter={StaticResource BooleanToVisibilityConverter}}" IsEnabled="{Binding ButtonYesVisible}"/>
+        <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" Content="No" Command="{Binding ButtonNoCommand}" Visibility="{Binding ButtonNoVisible, Converter={StaticResource BooleanToVisibilityConverter}}" IsEnabled="{Binding ButtonNoVisible}"/>
+    </Grid>
+</UserControl>

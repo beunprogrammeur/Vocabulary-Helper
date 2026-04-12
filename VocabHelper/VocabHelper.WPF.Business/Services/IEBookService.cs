@@ -4,6 +4,7 @@ namespace VocabHelper.WPF.Business.Services
 {
     public interface IEBookService
     {
-        IEnumerable<EBookWord> GetAllWords(string path, bool removeDuplicates);
+        IEnumerable<EBookWordModel> GetAllWords(string path, bool removeDuplicates);
+        IEnumerable<EBookWordModel> GetAllWordsFromText(string text, bool removeDuplicates);
     }
 }

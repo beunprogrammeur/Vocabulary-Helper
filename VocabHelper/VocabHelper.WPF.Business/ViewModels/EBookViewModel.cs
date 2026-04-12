@@ -12,8 +12,10 @@ namespace VocabHelper.WPF.Business.ViewModels
         private readonly ITranslationService _translationService;
         private readonly IAnkiService _ankiService;
         private readonly IEBookService _ebookService;
-        private readonly IFileSelectionService _fileSelectionService;
+        private readonly IDialogService _dialogService;
         private readonly IStemmerServiceFactory _stemmerServiceFactory;
+
+        private AnkiMappingModel _mappings;
 
         [ObservableProperty] private LanguageId language;
         [ObservableProperty] private int totalTranslations;
@@ -22,13 +24,13 @@ namespace VocabHelper.WPF.Business.ViewModels
         [ObservableProperty] private ObservableCollection<AnkiDeckViewModel> ankiDecks = [];
 
         public EBookViewModel(ITranslationService translationService,
-            IAnkiService ankiSerivce, IEBookService ebookService, IFileSelectionService fileSelectionService,
+            IAnkiService ankiSerivce, IEBookService ebookService, IDialogService dialogService,
             IStemmerServiceFactory stemmerServiceFactory)
         {
             _translationService = translationService;
             _ankiService = ankiSerivce;
             _ebookService = ebookService;
-            _fileSelectionService = fileSelectionService;
+            _dialogService = dialogService;
             _stemmerServiceFactory = stemmerServiceFactory;
         }
 
@@ -51,17 +53,165 @@ namespace VocabHelper.WPF.Business.ViewModels
         [RelayCommand]
         private void LoadEBook()
         {
-            var result = _fileSelectionService.OpenFile();
+            var result = _dialogService.OpenFile();
             if (!result.Success)
             {
                 return;
             }
-            var allWords = _ebookService.GetAllWords(result.File, false);
+            var words = _ebookService.GetAllWords(result.File, false);
+            var language = result.Language.Value;
+            ProcessText(words, language);
+        }
 
-            Language = result.Language.Value;
-            IStemmerService stemmerService = _stemmerServiceFactory.GetStemmer(result.Language.Value);
+        [RelayCommand]
+        private async Task TranslateCards()
+        {
+            var activeCandidates = cardCandidates.Where(x => !x.IsIgnored);
+            TotalTranslations = activeCandidates.Count();
+            CompletedTranslations = 0;
+
+            foreach (var candidate in activeCandidates)
+            {
+                if (string.IsNullOrEmpty(candidate.WordTranslation))
+                {
+                    candidate.WordTranslation =
+                        await _translationService.TranslateAsync(
+                            candidate.Word,
+                            Language,
+                            LanguageId.English);
+                    CompletedTranslations++;
+                }
+
+                if (string.IsNullOrEmpty(candidate.SentenceTranslation))
+                {
+
+                    candidate.SentenceTranslation =
+                        await _translationService.TranslateAsync(
+                            candidate.Sentence,
+                            Language,
+                            LanguageId.English);
+                }
+            }
+        }
+
+
+        [RelayCommand]
+        private async void MarkCandidatesIgnoredFromDeck()
+        {
+            string[] decksToSearch = AnkiDecks.Where(x => x.Match).Select(x => x.DeckName).ToArray();
+
+            Dictionary<string, AnkiCard> ankiCards = [];
+
+            foreach (string deck in decksToSearch)
+            {
+                var cards = await _ankiService.GetCards(deck);
+                foreach (var card in cards)
+                {
+                    if (!ankiCards.ContainsKey(card.SearchFieldValue.ToLower()))
+                    {
+                        ankiCards[card.SearchFieldValue.ToLower()] = card;
+                    }
+                }
+            }
+
+            foreach (var candidate in cardCandidates)
+            {
+                if (ankiCards.ContainsKey(candidate.Word.ToLower()))
+                {
+                    candidate.IsIgnored = true;
+                }
+            }
+        }
+
+        [RelayCommand]
+        private async void Mapping()
+        {
+            _mappings = _dialogService.GetMapping(_mappings);
+        }
+
+        [RelayCommand]
+        private async void Import()
+        {
+            var mapping = _mappings;
+            
+            if(mapping == null)
+            {
+                _dialogService.ShowMessageBox(MessageBoxType.Ok, "Please do a mapping first", "Error");
+                return;
+            }
+
+
+            AnkiBulkImportModel ankiBulkImportModel = new AnkiBulkImportModel();
+
+            foreach(var candidate in CardCandidates.Where(x => !x.IsIgnored && !string.IsNullOrEmpty(x.WordTranslation)))
+            {
+                ankiBulkImportModel.Notes.Add(new AnkiNoteImportModel()
+                {
+                    tags = mapping.Tags,
+                    fields = CreateFieldsForCardCandiate(mapping.Mappings, candidate),
+                    deckName = mapping.DeckName,
+                    modelName = mapping.CardName,
+                });
+            }
+
+            if (!ankiBulkImportModel.Notes.Any())
+            {
+                _dialogService.ShowMessageBox(MessageBoxType.Ok, "No cards were selected. (did you forget to translate the cards?)", "Error");
+                return;
+            }
+
+            int cardCount = ankiBulkImportModel.Notes.Count;
+            string? cardName = ankiBulkImportModel.Notes.FirstOrDefault()?.modelName;
+            string? deckName = ankiBulkImportModel.Notes.FirstOrDefault()?.deckName;
+            if (_dialogService.ShowMessageBox(MessageBoxType.YesNo, $"Are you sure you want to import {cardCount} `{cardName}` cards into deck `{deckName}`?", "Please confirm") == true)
+            {
+                _ankiService.ImportNotesAsync(ankiBulkImportModel);
+            }
+        }
+
+        private Dictionary<string, string> CreateFieldsForCardCandiate(List<AnkiCandidateMappingModel> mappings, CardCandidateViewModel cardCandidate)
+        {
+            Dictionary<string, string> fields = [];
+            foreach(var mapping in mappings)
+            {
+                switch (mapping.CandidateFieldName)
+                {
+                    case "word":
+                        fields[mapping.AnkiFieldName] = cardCandidate.Word;
+                        break;
+                    case "word-translation":
+                        fields[mapping.AnkiFieldName] = cardCandidate.WordTranslation;
+                        break;
+                    case "sentence":
+                        fields[mapping.AnkiFieldName] = cardCandidate.Sentence;
+                        break;
+                    case "sentence-translation":
+                        fields[mapping.AnkiFieldName] = cardCandidate.SentenceTranslation;
+                        break;
+                }
+            }
+
+            return fields;
+        }
+
+        [RelayCommand]
+        private void LoadRawText()
+        {
+            var result = _dialogService.GetRawText();
+            if (result.success)
+            {
+                // do something with the language
+                var words = _ebookService.GetAllWordsFromText(result.text, false);
+                ProcessText(words, result.language);
+            }
+        }
+
+        private void ProcessText(IEnumerable<EBookWordModel> words, LanguageId language)
+        {
+            Language = language;
+            IStemmerService stemmerService = _stemmerServiceFactory.GetStemmer(language);
             Dictionary<string, CardCandidateViewModel> stemmedWords = [];
-            foreach (var word in allWords)
+            foreach (var word in words)
             {
                 var stemmedWord = stemmerService.Stem(word.Word.ToLower());
 
@@ -89,66 +239,6 @@ namespace VocabHelper.WPF.Business.ViewModels
             foreach (var candidate in stemmedWords.Values.OrderBy(x => x.Index))
             {
                 CardCandidates.Add(candidate);
-            }
-        }
-
-        [RelayCommand]
-        private async Task TranslateCards()
-        {
-            var activeCandidates = cardCandidates.Where(x => !x.IsIgnored);
-            TotalTranslations = activeCandidates.Count();
-            CompletedTranslations = 0;
-
-            foreach (var candidate in activeCandidates)
-            {
-                if (string.IsNullOrEmpty(candidate.WordTranslation))
-                {
-                    candidate.WordTranslation =
-                        await _translationService.TranslateAsync(
-                            candidate.Word,
-                            Language,
-                            LanguageId.English);
-                    CompletedTranslations++;
-                }
-
-                if (string.IsNullOrEmpty(candidate.SentenceTranslation))
-                {
-                    
-                    candidate.SentenceTranslation =
-                        await _translationService.TranslateAsync(
-                            candidate.Sentence,
-                            Language,
-                            LanguageId.English);
-                }
-            }
-        }
-
-
-        [RelayCommand]
-        private async void MarkCandidatesIgnoredFromDeck()
-        {
-            string[] decksToSearch = AnkiDecks.Where(x => x.Match).Select(x => x.DeckName).ToArray();
-
-            Dictionary<string, AnkiCard> ankiCards = [];
-
-            foreach (string deck in decksToSearch)
-            {
-                var cards = await _ankiService.GetCards(deck);
-                foreach(var card in cards)
-                {
-                    if (!ankiCards.ContainsKey(card.SearchFieldValue.ToLower()))
-                    {
-                        ankiCards[card.SearchFieldValue.ToLower()] = card;
-                    }
-                }
-            }
-
-            foreach(var candidate in cardCandidates)
-            {
-                if (ankiCards.ContainsKey(candidate.Word.ToLower()))
-                {
-                    candidate.IsIgnored = true;
-                }
             }
         }
     }

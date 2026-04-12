@@ -39,7 +39,7 @@ namespace VocabHelper.WPF.Business.ViewModels
         [RelayCommand(CanExecute = nameof(CanExecuteContinue))]
         private void Continue()
         {
-            WordSelectionComplete?.Invoke(this, EventArgs.Empty);
+            WordSelectionComplete?.Invoke(this, System.EventArgs.Empty);
         }
 
         private bool CanExecuteContinue()

@@ -19,13 +19,14 @@ namespace VocabHelper.WPF
 
             // Register Business-layer services
             BusinessServicesFactory.Configure(services);
-            services.AddSingleton<IFileSelectionService, FileSelectionService>();
+            services.AddSingleton<IDialogService, DialogService>();
 
             // Register ViewModels
             services.AddTransient<MainViewModel>();
             services.AddTransient<EBookViewModel>();
             services.AddTransient<CardCandidateViewModel>();
             services.AddTransient<LoadEBookViewModel>();
+            services.AddTransient<CandidateToCardMappingViewModel>();
 
             // Build the DI container
             Services = services.BuildServiceProvider();
