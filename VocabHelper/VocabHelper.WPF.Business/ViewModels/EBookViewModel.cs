@@ -2,11 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using VocabHelper.Core;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.Models;
 using VocabHelper.WPF.Business.Services;
 
 namespace VocabHelper.WPF.Business.ViewModels
 {
+    [RegisterService]
     public partial class EBookViewModel : BaseViewModel
     {
         private readonly ITranslationService _translationService;

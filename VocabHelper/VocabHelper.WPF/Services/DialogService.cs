@@ -1,21 +1,27 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using VocabHelper.Core;
+﻿using VocabHelper.Core;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.Models;
 using VocabHelper.WPF.Business.Services;
 using VocabHelper.WPF.Business.ViewModels;
-using VocabHelper.WPF.Windows;
+using VocabHelper.WPF.Factories;
 
 namespace VocabHelper.WPF.Services
 {
+    [RegisterService<IDialogService>(RegistrationType.Singleton)]
     internal class DialogService : IDialogService
     {
+        private readonly IWindowFactory _windowFactory;
+        public DialogService(IWindowFactory windowFactory)
+        {
+            _windowFactory = windowFactory;
+        }
 
         public (bool Success, LanguageId? Language, string? File) OpenFile()
         {
-            LoadEBookWindow window = new();
+            var window = _windowFactory.GetLoadEBookWindow();
             if (window.ShowDialog() == true)
             {
-                return (true, window.Language.Value, window.FilePath);
+                return (true, window.ViewModel.ChosenLanguage, window.ViewModel.FilePath);
             }
 
             return (false, null, null);
@@ -23,22 +29,23 @@ namespace VocabHelper.WPF.Services
 
         public AnkiMappingModel? GetMapping(AnkiMappingModel previousMapping)
         {
+            var window = _windowFactory.GetCandidateToCardMappingWindow();
+            CandidateToCardMappingViewModel viewModel = window.ViewModel;
+            viewModel.CandidateFields =
+                [
+                    "word",
+                    "word-translation",
+                    "sentence",
+                    "sentence-translation"
+                ];
 
-            CandidateToCardMappingViewModel viewModel = App.Services.GetRequiredService<CandidateToCardMappingViewModel>();
-            viewModel.CandidateFields = [
-                "word",
-                "word-translation",
-                "sentence",
-                "sentence-translation"
-            ];
-
-            if(previousMapping != null)
+            if (previousMapping != null)
             {
-                foreach(string tag in previousMapping.Tags)
+                foreach (string tag in previousMapping.Tags)
                 {
                     viewModel.Tags.Add(tag);
                 }
-            
+
                 foreach (var mapping in previousMapping.Mappings)
                 {
                     viewModel.Mappings.Add(new CardCandidateMapViewModel()
@@ -47,12 +54,12 @@ namespace VocabHelper.WPF.Services
                         CardField = mapping.AnkiFieldName
                     });
                 }
-                
+
                 viewModel.SelectedDeck = previousMapping.DeckName;
                 viewModel.SelectedCardType = previousMapping.CardName;
             }
 
-            if (DialogWindow.ShowDialog(viewModel) == true)
+            if (window.ShowDialog() == true)
             {
                 return new AnkiMappingModel()
                 {
@@ -72,10 +79,10 @@ namespace VocabHelper.WPF.Services
 
         public (bool success, string? text, LanguageId language) GetRawText()
         {
-            LoadRawTextViewModel loadRawTextViewModel = new LoadRawTextViewModel();
-            if (DialogWindow.ShowDialog(loadRawTextViewModel) == true)
+            var window = _windowFactory.GetLoadRawTextWindow();
+            if (window.ShowDialog() == true)
             {
-                return (true, loadRawTextViewModel.RawText, loadRawTextViewModel.ChosenLanguage);
+                return (true, window.ViewModel.RawText, window.ViewModel.ChosenLanguage);
             }
 
             return (false, null, default);
@@ -83,10 +90,10 @@ namespace VocabHelper.WPF.Services
 
         public bool? ShowMessageBox(MessageBoxType type, string message, string title = "")
         {
-            MessageBoxViewModel viewModel = new MessageBoxViewModel(type, message, title);
-            if (DialogWindow.ShowDialog(viewModel) == true)
+            var window = _windowFactory.GetMessageBoxWindow(type, message, title);
+            if (window.ShowDialog() == true)
             {
-                return viewModel.ChosenButton switch
+                return window.ViewModel.ChosenButton switch
                 {
                     MessageBoxButton.Ok => true,
                     MessageBoxButton.Yes => true,

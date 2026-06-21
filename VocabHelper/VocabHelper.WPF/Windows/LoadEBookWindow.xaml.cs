@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
+﻿using System.Windows;
 using VocabHelper.Core;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.ViewModels;
 
 namespace VocabHelper.WPF.Windows
@@ -8,17 +8,20 @@ namespace VocabHelper.WPF.Windows
     /// <summary>
     /// Interaction logic for DragAndDropWindow.xaml
     /// </summary>
-    public partial class LoadEBookWindow : Window
+    [RegisterService<IWindow<LoadEBookViewModel>>]
+    public partial class LoadEBookWindow : Window, IWindow<LoadEBookViewModel>
     {
-        private LoadEBookViewModel ViewModel => (LoadEBookViewModel)DataContext;
         public string FilePath => ViewModel.FilePath;
         public LanguageId? Language => ViewModel.ChosenLanguage;
         public bool Success => DialogResult == true;
 
-        public LoadEBookWindow()
+        LoadEBookViewModel ViewModel { get => DataContext as LoadEBookViewModel; set => DataContext = value; }
+        LoadEBookViewModel IWindow<LoadEBookViewModel>.ViewModel { get => ViewModel; set => ViewModel = value; }
+
+        public LoadEBookWindow(LoadEBookViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = App.Services.GetRequiredService<LoadEBookViewModel>();
+            DataContext = viewModel;
             ViewModel.WordSelectionComplete += OnWordSelectionComplete;
         }
 

@@ -1,8 +1,10 @@
 ﻿using System.Text.Json;
 using VocabHelper.Core;
+using VocabHelper.Interfaces;
 
 namespace VocabHelper.WPF.Business.Services
 {
+    [RegisterService<ITranslationService>]
     internal class TranslationService : ITranslationService
     {
         private static readonly HttpClient _httpClient = new();

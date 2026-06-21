@@ -1,5 +1,8 @@
-﻿namespace VocabHelper.WPF.Business.ViewModels
+﻿using VocabHelper.Interfaces;
+
+namespace VocabHelper.WPF.Business.ViewModels
 {
+    [RegisterService]
     public class MainViewModel : BaseViewModel
     {
         public EBookViewModel EBookViewModel { get; set; }

@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.EventArgs;
 using VocabHelper.WPF.Business.Services;
 
 namespace VocabHelper.WPF.Business.ViewModels
 {
+    [RegisterService]
     public partial class CandidateToCardMappingViewModel : BaseViewModel, IDialogViewModel
     {
         private readonly IAnkiService _ankiService;

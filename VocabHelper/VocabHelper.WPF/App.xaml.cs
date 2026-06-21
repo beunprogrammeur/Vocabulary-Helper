@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Windows;
-using VocabHelper.WPF.Business.Services;
 using VocabHelper.WPF.Business.ViewModels;
-using VocabHelper.WPF.Services;
+using VocabHelper.WPF.Extensions;
+using VocabHelper.WPF.Windows;
 
 namespace VocabHelper.WPF
 {
@@ -11,28 +12,20 @@ namespace VocabHelper.WPF
     /// </summary>
     public partial class App : Application
     {
-        public static IServiceProvider Services { get; private set; }
-
-        protected override void OnStartup(StartupEventArgs e)
+        private static IHost _host;
+        private void Application_Startup(object sender, StartupEventArgs e)
         {
-            IServiceCollection services = new ServiceCollection();
+            var builder = Host.CreateApplicationBuilder();
 
-            // Register Business-layer services
-            BusinessServicesFactory.Configure(services);
-            services.AddSingleton<IDialogService, DialogService>();
+            builder.Services.AddDiscoveredServices();
+            _host = builder.Build();
 
-            // Register ViewModels
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<EBookViewModel>();
-            services.AddTransient<CardCandidateViewModel>();
-            services.AddTransient<LoadEBookViewModel>();
-            services.AddTransient<CandidateToCardMappingViewModel>();
+            var mainWindow = _host.Services.GetRequiredService<IWindow<MainViewModel>>();
+            mainWindow.ShowDialog();
+        }
 
-            // Build the DI container
-            Services = services.BuildServiceProvider();
-
-            base.OnStartup(e);
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
         }
     }
-
 }

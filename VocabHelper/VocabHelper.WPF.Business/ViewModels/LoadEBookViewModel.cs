@@ -2,38 +2,37 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using VocabHelper.Core;
-using VocabHelper.WPF.Business.Services;
+using VocabHelper.Interfaces;
+using VocabHelper.WPF.Business.EventArgs;
 
 namespace VocabHelper.WPF.Business.ViewModels
 {
-    public partial class LoadEBookViewModel : BaseViewModel
+    [RegisterService]
+    public partial class LoadEBookViewModel : BaseViewModel, IDialogViewModel
     {
-        private readonly IStemmerServiceFactory _stemmerServiceFactory;
-        private readonly IEBookService _ebookService;
+        [NotifyCanExecuteChangedFor(nameof(ContinueCommand))]
+        [ObservableProperty]
+        private string filePath;
+
+        [ObservableProperty]
+        private LanguageId[] languages;
 
         [NotifyCanExecuteChangedFor(nameof(ContinueCommand))]
-        [ObservableProperty] 
-        private string filePath;
-        
-        [ObservableProperty] 
-        private LanguageId[] languages;
-        
-        [NotifyCanExecuteChangedFor(nameof(ContinueCommand))]
-        [ObservableProperty] 
+        [ObservableProperty]
         private LanguageId? chosenLanguage;
 
         [ObservableProperty]
         private ObservableCollection<CardCandidateViewModel> cardCandidates;
 
-        public event EventHandler? WordSelectionComplete;
+        public string Title { get; set; }
 
-        public LoadEBookViewModel(IStemmerServiceFactory stemmerServiceFactory, IEBookService ebookService)
+        public event EventHandler? WordSelectionComplete;
+        public event EventHandler<CloseDialogEventArgs> CloseDialog;
+
+        public LoadEBookViewModel()
         {
             FilePath = string.Empty;
             Languages = Enum.GetValues<LanguageId>();
-            
-            _stemmerServiceFactory = stemmerServiceFactory;
-            _ebookService = ebookService;
         }
 
         [RelayCommand(CanExecute = nameof(CanExecuteContinue))]

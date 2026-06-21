@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VocabHelper.Core;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.EventArgs;
 
 namespace VocabHelper.WPF.Business.ViewModels
 {
+    [RegisterService]
     public partial class LoadRawTextViewModel : BaseViewModel, IDialogViewModel
     {
         [ObservableProperty] private string rawText;

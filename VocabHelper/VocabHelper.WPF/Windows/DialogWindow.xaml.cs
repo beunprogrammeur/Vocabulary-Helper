@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.EventArgs;
 using VocabHelper.WPF.Business.ViewModels;
 
@@ -7,23 +8,23 @@ namespace VocabHelper.WPF.Windows
     /// <summary>
     /// Interaction logic for DialogWindow.xaml
     /// </summary>
-    public partial class DialogWindow : Window
+    [RegisterService]
+    public partial class DialogWindow : Window, IWindow<IDialogViewModel>
     {
         public DialogWindow()
         {
             InitializeComponent();
         }
 
-        public static bool? ShowDialog(IDialogViewModel viewModel)
+        public IDialogViewModel ViewModel
         {
-            DialogWindow window = new()
-            {
-                DataContext = viewModel
-            };
-            viewModel.CloseDialog += window.ViewModel_CloseDialog;
-            bool? result = window.ShowDialog();
-            viewModel.CloseDialog -= window.ViewModel_CloseDialog;
-            return result;
+            get => DataContext as IDialogViewModel;
+            set 
+            { 
+                DataContext = value; 
+                value.CloseDialog -= ViewModel_CloseDialog;
+                value.CloseDialog += ViewModel_CloseDialog;
+            }
         }
 
         private void ViewModel_CloseDialog(object? sender, CloseDialogEventArgs e)
