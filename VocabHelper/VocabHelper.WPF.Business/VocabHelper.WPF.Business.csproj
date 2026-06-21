@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\external\sastrawi\Sastrawi\sastrawi.csproj" />
     <ProjectReference Include="..\VocabHelper.Core\VocabHelper.Core.csproj" />
+    <ProjectReference Include="..\VocabHelper.Interfaces\VocabHelper.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>
