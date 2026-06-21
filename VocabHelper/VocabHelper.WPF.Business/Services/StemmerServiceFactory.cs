@@ -1,7 +1,9 @@
 ﻿using VocabHelper.Core;
+using VocabHelper.Interfaces;
 
 namespace VocabHelper.WPF.Business.Services
 {
+    [RegisterService<IStemmerServiceFactory>]
     internal class StemmerServiceFactory : IStemmerServiceFactory
     {
         public IStemmerService GetStemmer(LanguageId languageId)

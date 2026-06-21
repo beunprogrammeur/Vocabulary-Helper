@@ -24,7 +24,7 @@ namespace VocabHelper.WPF.Business.ViewModels
         [ObservableProperty]
         private ObservableCollection<CardCandidateViewModel> cardCandidates;
 
-        public string Title { get; set; }
+        public string Title { get; set; } = "Load EBook";
 
         public event EventHandler? WordSelectionComplete;
         public event EventHandler<CloseDialogEventArgs> CloseDialog;
@@ -38,7 +38,7 @@ namespace VocabHelper.WPF.Business.ViewModels
         [RelayCommand(CanExecute = nameof(CanExecuteContinue))]
         private void Continue()
         {
-            WordSelectionComplete?.Invoke(this, System.EventArgs.Empty);
+            CloseDialog?.Invoke(this, new CloseDialogEventArgs(true));
         }
 
         private bool CanExecuteContinue()

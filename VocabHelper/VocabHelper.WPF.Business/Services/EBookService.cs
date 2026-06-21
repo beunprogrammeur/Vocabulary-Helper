@@ -1,10 +1,12 @@
 ﻿using HtmlAgilityPack;
 using System.Text.RegularExpressions;
 using VersOne.Epub;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.Models;
 
 namespace VocabHelper.WPF.Business.Services
 {
+    [RegisterService<IEBookService>]
     internal class EBookService : IEBookService
     {
         public IEnumerable<EBookWordModel> GetAllWords(string path, bool removeDuplicates)
