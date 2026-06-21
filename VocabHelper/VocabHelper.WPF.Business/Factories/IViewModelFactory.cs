@@ -7,5 +7,6 @@ namespace VocabHelper.WPF.Business.Factories
         CandidateToCardMappingViewModel GetCandidateToCardMappingViewModel();
         LoadEBookViewModel GetLoadEbookViewModel();
         LoadRawTextViewModel GetLoadRawTextViewModel();
+        EBookViewModel GetEBookViewModel();
     }
 }

@@ -16,5 +16,6 @@ namespace VocabHelper.WPF.Business.Factories
         public CandidateToCardMappingViewModel GetCandidateToCardMappingViewModel() => _serviceProvider.GetRequiredService<CandidateToCardMappingViewModel>();
         public LoadEBookViewModel GetLoadEbookViewModel() => _serviceProvider.GetRequiredService<LoadEBookViewModel>();
         public LoadRawTextViewModel GetLoadRawTextViewModel() => _serviceProvider.GetRequiredService<LoadRawTextViewModel>();
+        public EBookViewModel GetEBookViewModel() => _serviceProvider.GetRequiredService<EBookViewModel>();
     }
 }

@@ -3,13 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using VocabHelper.Core;
 using VocabHelper.Interfaces;
+using VocabHelper.WPF.Business.EventArgs;
 using VocabHelper.WPF.Business.Models;
 using VocabHelper.WPF.Business.Services;
 
 namespace VocabHelper.WPF.Business.ViewModels
 {
     [RegisterService]
-    public partial class EBookViewModel : BaseViewModel
+    public partial class EBookViewModel : BaseViewModel, IDialogViewModel
     {
         private readonly ITranslationService _translationService;
         private readonly IAnkiService _ankiService;
@@ -24,6 +25,10 @@ namespace VocabHelper.WPF.Business.ViewModels
         [ObservableProperty] private int completedTranslations;
         [ObservableProperty] private ObservableCollection<CardCandidateViewModel> cardCandidates = [];
         [ObservableProperty] private ObservableCollection<AnkiDeckViewModel> ankiDecks = [];
+
+        public event EventHandler<CloseDialogEventArgs> CloseDialog;
+
+        public string Title { get; set; } = "Anki text importer";
 
         public EBookViewModel(ITranslationService translationService,
             IAnkiService ankiSerivce, IEBookService ebookService, IDialogService dialogService,

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using System.Windows;
 using VocabHelper.WPF.Business.ViewModels;
 using VocabHelper.WPF.Extensions;
+using VocabHelper.WPF.Factories;
 using VocabHelper.WPF.Windows;
 
 namespace VocabHelper.WPF
@@ -19,9 +20,9 @@ namespace VocabHelper.WPF
 
             builder.Services.AddDiscoveredServices();
             _host = builder.Build();
-
-            var mainWindow = _host.Services.GetRequiredService<IWindow<MainViewModel>>();
-            mainWindow.ShowDialog();
+            _host.Services.GetRequiredService<IWindowFactory>()
+                .GetMainWindow()
+                .ShowDialog();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
