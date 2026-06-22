@@ -8,7 +8,7 @@ namespace VocabHelper.WPF.Factories
         IWindow<CandidateToCardMappingViewModel> GetCandidateToCardMappingWindow();
         IWindow<LoadEBookViewModel> GetLoadEBookWindow();
         IWindow<LoadRawTextViewModel> GetLoadRawTextWindow();
-        IWindow<EBookViewModel> GetMainWindow();
+        IWindow<MainViewModel> GetMainWindow();
         IWindow<MessageBoxViewModel> GetMessageBoxWindow(MessageBoxType type, string message, string title);
     }
 }

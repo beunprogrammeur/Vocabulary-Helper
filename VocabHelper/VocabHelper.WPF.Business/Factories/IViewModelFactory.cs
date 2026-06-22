@@ -8,5 +8,6 @@ namespace VocabHelper.WPF.Business.Factories
         LoadEBookViewModel GetLoadEbookViewModel();
         LoadRawTextViewModel GetLoadRawTextViewModel();
         EBookViewModel GetEBookViewModel();
+        MainViewModel GetMainViewModel();
     }
 }
