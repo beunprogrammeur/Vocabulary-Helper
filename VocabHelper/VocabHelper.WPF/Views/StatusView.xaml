@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="VocabHelper.WPF.Views.StatusView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VocabHelper.WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StatusBar Grid.Row="3" Grid.ColumnSpan="999">
+        <StatusBarItem HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal">
+                <Label>Translations</Label>
+                <Label Content="{Binding CompletedTranslations}"></Label>
+                <Label>/</Label>
+                <Label Content="{Binding TotalTranslations}"></Label>
+            </StackPanel>
+        </StatusBarItem>
+    </StatusBar>
+</UserControl>

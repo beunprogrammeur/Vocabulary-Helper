@@ -9,13 +9,16 @@ namespace VocabHelper.WPF.Business.ViewModels
         public EBookViewModel DictionaryViewModel { get; }
         public LoadRawTextViewModel TextLoadViewModel { get; }
         public CandidateToCardMappingViewModel CandidateToCardMappingViewModel { get; }
+        public StatusViewModel StatusViewModel { get; }
         public MainViewModel(EBookViewModel dictionaryViewModel, 
             LoadRawTextViewModel textLoadViewModel, 
-            CandidateToCardMappingViewModel candidateToCardMappingViewModel)
+            CandidateToCardMappingViewModel candidateToCardMappingViewModel,
+            StatusViewModel statusViewModel)
         {
             DictionaryViewModel = dictionaryViewModel;
             TextLoadViewModel = textLoadViewModel;
             CandidateToCardMappingViewModel = candidateToCardMappingViewModel;
+            StatusViewModel = statusViewModel;
         }
 
         public string Title { get; set; } = "Anki Vocabulary Helper";

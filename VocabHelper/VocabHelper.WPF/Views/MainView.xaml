@@ -9,7 +9,11 @@
              xmlns:v="clr-namespace:VocabHelper.WPF.Views"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TabControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
             <TabItem Header="Dictionary">
                 <v:EBookView DataContext="{Binding DictionaryViewModel}"/>
             </TabItem>
@@ -26,6 +30,7 @@
                 TBD
             </TabItem>
         </TabControl>
+        <v:StatusView Grid.Row="1" Grid.ColumnSpan="999" DataContext="{Binding StatusViewModel}" />
     </Grid>
     
     

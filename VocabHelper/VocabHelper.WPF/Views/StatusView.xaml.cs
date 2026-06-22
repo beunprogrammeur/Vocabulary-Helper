@@ -3,11 +3,11 @@
 namespace VocabHelper.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for EBookView.xaml
+    /// Interaction logic for StatusView.xaml
     /// </summary>
-    public partial class EBookView : UserControl
+    public partial class StatusView : UserControl
     {
-        public EBookView()
+        public StatusView()
         {
             InitializeComponent();
         }
