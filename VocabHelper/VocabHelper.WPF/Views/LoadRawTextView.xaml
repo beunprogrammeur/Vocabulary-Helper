@@ -18,7 +18,7 @@
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0">Language</Label>
         <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding ChosenLanguage}" />
-        <TextBox Grid.Row="1" Grid.ColumnSpan="999" FontFamily="Consolas" Text="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"  />
+        <TextBox Grid.Row="1" Grid.ColumnSpan="999" FontFamily="Consolas" Text="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True"  />
         <Button Grid.Row="2" Grid.ColumnSpan="999" Command="{Binding AcceptCommand}">Accept</Button>
     </Grid>
 </UserControl>

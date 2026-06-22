@@ -1,8 +1,10 @@
 ﻿using System.Text;
 using System.Text.Json;
+using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.Models;
 using VocabHelper.WPF.Business.Services;
 
+[RegisterService<IAnkiService>]
 internal class AnkiService : IAnkiService
 {
     private readonly SemaphoreSlim _ankiLock = new(1, 1);

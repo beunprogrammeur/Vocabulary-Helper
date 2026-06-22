@@ -4,18 +4,24 @@
              xmlns:local="clr-namespace:VocabHelper.WPF"
              xmlns:vm="clr-namespace:VocabHelper.WPF.Business.ViewModels;assembly=VocabHelper.WPF.Business"
              xmlns:v="clr-namespace:VocabHelper.WPF.Views"
-             StartupUri="MainWindow.xaml">
+             Startup="Application_Startup"
+             Exit="Application_Exit"
+             >
     <Application.Resources>
         <DataTemplate DataType="{x:Type vm:CandidateToCardMappingViewModel}">
             <v:CandidateToCardMappingView />
         </DataTemplate>
-
         <DataTemplate DataType="{x:Type vm:LoadRawTextViewModel}">
             <v:LoadRawTextView />
         </DataTemplate>
-        
         <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
             <v:MessageBoxView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LoadEBookViewModel}">
+            <v:LoadEBookView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EBookViewModel}">
+            <v:EBookView />
         </DataTemplate>
     </Application.Resources>
 </Application>
