@@ -7,11 +7,11 @@ namespace VocabHelper.WPF.Business.ViewModels
     public class MainViewModel : BaseViewModel, IDialogViewModel
     {
         public EBookViewModel DictionaryViewModel { get; }
-        public LoadRawTextViewModel TextLoadViewModel { get; }
+        public LoadTextViewModel TextLoadViewModel { get; }
         public CandidateToCardMappingViewModel CandidateToCardMappingViewModel { get; }
         public StatusViewModel StatusViewModel { get; }
         public MainViewModel(EBookViewModel dictionaryViewModel, 
-            LoadRawTextViewModel textLoadViewModel, 
+            LoadTextViewModel textLoadViewModel, 
             CandidateToCardMappingViewModel candidateToCardMappingViewModel,
             StatusViewModel statusViewModel)
         {

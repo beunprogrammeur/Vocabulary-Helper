@@ -25,7 +25,7 @@ namespace VocabHelper.WPF.Factories
         }
 
         public IWindow<LoadEBookViewModel> GetLoadEBookWindow() => GetDialogWindow(_viewModelFactory.GetLoadEbookViewModel());
-        public IWindow<LoadRawTextViewModel> GetLoadRawTextWindow() => GetDialogWindow(_viewModelFactory.GetLoadRawTextViewModel());
+        public IWindow<LoadTextViewModel> GetLoadRawTextWindow() => GetDialogWindow(_viewModelFactory.GetLoadRawTextViewModel());
         public IWindow<MessageBoxViewModel> GetMessageBoxWindow(MessageBoxType type, string message, string title) => GetDialogWindow(new MessageBoxViewModel(type, message, title));
         public IWindow<CandidateToCardMappingViewModel> GetCandidateToCardMappingWindow() => GetDialogWindow(_viewModelFactory.GetCandidateToCardMappingViewModel());
         public IWindow<MainViewModel> GetMainWindow() => GetDialogWindow(_viewModelFactory.GetMainViewModel());

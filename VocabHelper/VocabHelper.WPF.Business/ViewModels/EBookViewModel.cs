@@ -17,6 +17,8 @@ namespace VocabHelper.WPF.Business.ViewModels
         private readonly IEBookService _ebookService;
         private readonly IDialogService _dialogService;
         private readonly IStemmerServiceFactory _stemmerServiceFactory;
+        private readonly ITextProcessingService _textProcessingService;
+        private readonly StatusViewModel _statusViewModel;
 
         private AnkiMappingModel _mappings;
 
@@ -32,13 +34,35 @@ namespace VocabHelper.WPF.Business.ViewModels
 
         public EBookViewModel(ITranslationService translationService,
             IAnkiService ankiSerivce, IEBookService ebookService, IDialogService dialogService,
-            IStemmerServiceFactory stemmerServiceFactory)
+            IStemmerServiceFactory stemmerServiceFactory, ITextProcessingService textProcessingService,
+            StatusViewModel statusViewModel)
         {
             _translationService = translationService;
             _ankiService = ankiSerivce;
             _ebookService = ebookService;
             _dialogService = dialogService;
             _stemmerServiceFactory = stemmerServiceFactory;
+            _textProcessingService = textProcessingService;
+            _statusViewModel = statusViewModel;
+
+            _statusViewModel.WordRepositoryUpdated += OnWordRepositoryUpdated;
+            Language = LanguageId.English; // TODO: move this to a settings thing (statusviewmodel for now).
+        }
+
+        private void OnWordRepositoryUpdated(object? sender, System.EventArgs e)
+        {
+            CardCandidates.Clear();
+            foreach (var word in _statusViewModel.WordRepository.Words.Values.OrderBy(x => x.Index))
+            {
+                CardCandidates.Add(new CardCandidateViewModel()
+                {
+                    Word = word.Word,
+                    Sentence = word.Sentence,
+                    Index = word.Index,
+                    Frequency = word.Count,
+                    Variations = new ObservableCollection<string>(word.Variations)
+                });
+            }
         }
 
         [RelayCommand]
@@ -84,7 +108,7 @@ namespace VocabHelper.WPF.Business.ViewModels
                     candidate.WordTranslation =
                         await _translationService.TranslateAsync(
                             candidate.Word,
-                            Language,
+                            _statusViewModel.WordRepository.Language,
                             LanguageId.English);
                     CompletedTranslations++;
                 }
@@ -95,7 +119,7 @@ namespace VocabHelper.WPF.Business.ViewModels
                     candidate.SentenceTranslation =
                         await _translationService.TranslateAsync(
                             candidate.Sentence,
-                            Language,
+                            _statusViewModel.WordRepository.Language,
                             LanguageId.English);
                 }
             }
@@ -220,7 +244,7 @@ namespace VocabHelper.WPF.Business.ViewModels
             Dictionary<string, CardCandidateViewModel> stemmedWords = [];
             foreach (var word in words)
             {
-                var stemmedWord = stemmerService.Stem(word.Word.ToLower());
+                var stemmedWord = stemmerService.Stem(word.Word.ToLower(), word.Sentence);
 
                 if (stemmedWords.TryGetValue(stemmedWord, out CardCandidateViewModel candidate))
                 {

@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VocabHelper.WPF.Views"
+             xmlns:behaviours="clr-namespace:VocabHelper.WPF.Behaviours"
+             xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -18,7 +20,9 @@
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0">Language</Label>
         <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding ChosenLanguage}" />
-        <TextBox Grid.Row="1" Grid.ColumnSpan="999" FontFamily="Consolas" Text="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True"  />
+        <avalonEdit:TextEditor Grid.Row="1" Grid.ColumnSpan="999" FontFamily="Consolas" ShowLineNumbers="True" WordWrap="True" behaviours:AvalonEditBehaviour.BoundText="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" />
+
+
         <Button Grid.Row="2" Grid.ColumnSpan="999" Command="{Binding AcceptCommand}">Accept</Button>
     </Grid>
 </UserControl>

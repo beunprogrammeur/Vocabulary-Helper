@@ -11,7 +11,7 @@ namespace VocabHelper.WPF.Business.Services
             _stemmer = new StemmerFactory().CreateStemmer();
         }
 
-        public string Stem(string word)
+        public string Stem(string word, string sentence)
         {
             if(string.IsNullOrEmpty(word))
             {

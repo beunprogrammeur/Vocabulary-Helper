@@ -11,7 +11,7 @@
         <DataTemplate DataType="{x:Type vm:CandidateToCardMappingViewModel}">
             <v:CandidateToCardMappingView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:LoadRawTextViewModel}">
+        <DataTemplate DataType="{x:Type vm:LoadTextViewModel}">
             <v:LoadRawTextView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
