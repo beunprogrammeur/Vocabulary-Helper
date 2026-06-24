@@ -6,6 +6,6 @@ namespace VocabHelper.WPF.Business.Services
     public interface ITextProcessingService
     {
         string ReadEpub(string epub);
-        VocabularyRepositoryModel ProcessText(string text, LanguageId language, VocabularyRepositoryModel? repository = null);
+        VocabularyRepositoryModel ProcessText(string text, Language language, VocabularyRepositoryModel? repository = null);
     }
 }

@@ -33,7 +33,7 @@ namespace VocabHelper.WPF.Business.Services
             return builder.ToString();
         }
 
-        public VocabularyRepositoryModel ProcessText(string text, LanguageId language, VocabularyRepositoryModel? repository = null)
+        public VocabularyRepositoryModel ProcessText(string text, Language language, VocabularyRepositoryModel? repository = null)
         {
             if (repository == null)
             {
@@ -86,7 +86,7 @@ namespace VocabHelper.WPF.Business.Services
             return words;
         }
 
-        private IReadOnlyList<WordEntryModel> GetStemmedWords(IReadOnlyList<WordEntryModel> words, LanguageId language)
+        private IReadOnlyList<WordEntryModel> GetStemmedWords(IReadOnlyList<WordEntryModel> words, Language language)
         {
             Dictionary<string, WordEntryModel> stemmedWords = [];
 
@@ -117,4 +117,16 @@ namespace VocabHelper.WPF.Business.Services
             return stemmedWords.Values.ToList();
         }
     }
+}
+
+class LanguageSettings
+{
+    public Language LanguageId
+    {
+        get;
+    }
+}
+class Settings
+{
+    public LanguageSettings LanguageSettings { get; }    
 }

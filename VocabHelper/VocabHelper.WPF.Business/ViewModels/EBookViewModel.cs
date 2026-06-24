@@ -15,13 +15,11 @@ namespace VocabHelper.WPF.Business.ViewModels
         private readonly ITranslationService _translationService;
         private readonly IAnkiService _ankiService;
         private readonly IDialogService _dialogService;
-        private readonly IStemmerServiceFactory _stemmerServiceFactory;
-        private readonly ITextProcessingService _textProcessingService;
         private readonly StatusViewModel _statusViewModel;
 
         private AnkiMappingModel _mappings;
 
-        [ObservableProperty] private LanguageId language;
+        [ObservableProperty] private Language language;
         [ObservableProperty] private int totalTranslations;
         [ObservableProperty] private int completedTranslations;
         [ObservableProperty] private ObservableCollection<CardCandidateViewModel> cardCandidates = [];
@@ -33,18 +31,15 @@ namespace VocabHelper.WPF.Business.ViewModels
 
         public EBookViewModel(ITranslationService translationService,
             IAnkiService ankiSerivce, IDialogService dialogService,
-            IStemmerServiceFactory stemmerServiceFactory, ITextProcessingService textProcessingService,
             StatusViewModel statusViewModel)
         {
             _translationService = translationService;
             _ankiService = ankiSerivce;
             _dialogService = dialogService;
-            _stemmerServiceFactory = stemmerServiceFactory;
-            _textProcessingService = textProcessingService;
             _statusViewModel = statusViewModel;
 
             _statusViewModel.WordRepositoryUpdated += OnWordRepositoryUpdated;
-            Language = LanguageId.English; // TODO: move this to a settings thing (statusviewmodel for now).
+            Language = Core.Language.English; // TODO: move this to a settings thing (statusviewmodel for now).
         }
 
         private void OnWordRepositoryUpdated(object? sender, System.EventArgs e)
@@ -94,7 +89,7 @@ namespace VocabHelper.WPF.Business.ViewModels
                         await _translationService.TranslateAsync(
                             candidate.Word,
                             _statusViewModel.WordRepository.Language,
-                            LanguageId.English);
+                            Core.Language.English);
                     CompletedTranslations++;
                 }
 
@@ -105,7 +100,7 @@ namespace VocabHelper.WPF.Business.ViewModels
                         await _translationService.TranslateAsync(
                             candidate.Sentence,
                             _statusViewModel.WordRepository.Language,
-                            LanguageId.English);
+                            Core.Language.English);
                 }
             }
         }
@@ -157,7 +152,7 @@ namespace VocabHelper.WPF.Business.ViewModels
             }
 
 
-            AnkiBulkImportModel ankiBulkImportModel = new AnkiBulkImportModel();
+            AnkiBulkImportModel ankiBulkImportModel = new();
 
             foreach(var candidate in CardCandidates.Where(x => !x.IsIgnored && !string.IsNullOrEmpty(x.WordTranslation)))
             {

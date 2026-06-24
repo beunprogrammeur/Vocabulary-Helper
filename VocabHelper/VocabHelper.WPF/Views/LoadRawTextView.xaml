@@ -20,7 +20,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0">Language</Label>
-        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding ChosenLanguage}" />
+        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding AppSettings.LanguageSettings.SourceLanguage}" />
         <avalonEdit:TextEditor AllowDrop="True" Grid.Row="1" Grid.ColumnSpan="999" FontFamily="Consolas" ShowLineNumbers="True" WordWrap="True" behaviours:AvalonEditBehaviour.BoundText="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" >
             <i:Interaction.Behaviors>
                 <behaviours:DragDropFilesBehaviour FileDroppedCommand="{Binding FileDroppedCommand}"/>

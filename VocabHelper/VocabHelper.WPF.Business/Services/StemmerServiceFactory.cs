@@ -6,12 +6,12 @@ namespace VocabHelper.WPF.Business.Services
     [RegisterService<IStemmerServiceFactory>]
     internal class StemmerServiceFactory : IStemmerServiceFactory
     {
-        public IStemmerService GetStemmer(LanguageId languageId)
+        public IStemmerService GetStemmer(Language languageId)
         {
             return languageId switch
             {
-                LanguageId.Korean => new KoreanStemmerService(),
-                LanguageId.Indonesian => new IndonesianStemmerService(),
+                Language.Korean => new KoreanStemmerService(),
+                Language.Indonesian => new IndonesianStemmerService(),
                 _ => throw new NotSupportedException($"The language '{languageId}' is not supported.")
             };
         }

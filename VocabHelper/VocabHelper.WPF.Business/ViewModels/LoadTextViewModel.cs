@@ -4,6 +4,7 @@ using VocabHelper.Core;
 using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.EventArgs;
 using VocabHelper.WPF.Business.Services;
+using VocabHelper.WPF.Business.ViewModels.Persistence;
 
 namespace VocabHelper.WPF.Business.ViewModels
 {
@@ -14,17 +15,21 @@ namespace VocabHelper.WPF.Business.ViewModels
         private readonly StatusViewModel _statusViewModel;
 
         [ObservableProperty] private string rawText;
-        [ObservableProperty] private LanguageId chosenLanguage;
-        public LanguageId[] Languages => Enum.GetValues<LanguageId>();
+        [ObservableProperty] private Language chosenLanguage;
+
+        public AppSettings AppSettings { get; }
+
+        public Language[] Languages => Enum.GetValues<Language>();
 
         public string Title { get; set; }
 
         public event EventHandler<CloseDialogEventArgs> CloseDialog;
 
-        public LoadTextViewModel(ITextProcessingService textProcessingService, StatusViewModel statusViewModel)
+        public LoadTextViewModel(ITextProcessingService textProcessingService, StatusViewModel statusViewModel, AppSettings appSettings)
         {
             _textProcessingService = textProcessingService;
             _statusViewModel = statusViewModel; // TODO: should I do this here? or do they both share the same service?
+            AppSettings = appSettings;
         }
 
 

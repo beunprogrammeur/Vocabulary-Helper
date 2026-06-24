@@ -66,7 +66,7 @@ namespace VocabHelper.WPF.Services
             return null;
         }
 
-        public (bool success, string? text, LanguageId language) GetRawText()
+        public (bool success, string? text, Language language) GetRawText()
         {
             var window = _windowFactory.GetLoadRawTextWindow();
             if (window.ShowDialog() == true)

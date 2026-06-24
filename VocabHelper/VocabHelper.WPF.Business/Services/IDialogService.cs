@@ -7,7 +7,7 @@ namespace VocabHelper.WPF.Business.Services
     public interface IDialogService
     {
         AnkiMappingModel GetMapping(AnkiMappingModel previousMapping);
-        (bool success, string? text, LanguageId language) GetRawText();
+        (bool success, string? text, Language language) GetRawText();
         bool? ShowMessageBox(MessageBoxType type, string message, string title = "");
     }
 }
