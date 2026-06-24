@@ -14,7 +14,6 @@ namespace VocabHelper.WPF.Business.ViewModels
     {
         private readonly ITranslationService _translationService;
         private readonly IAnkiService _ankiService;
-        private readonly IEBookService _ebookService;
         private readonly IDialogService _dialogService;
         private readonly IStemmerServiceFactory _stemmerServiceFactory;
         private readonly ITextProcessingService _textProcessingService;
@@ -33,13 +32,12 @@ namespace VocabHelper.WPF.Business.ViewModels
         public string Title { get; set; } = "Anki text importer";
 
         public EBookViewModel(ITranslationService translationService,
-            IAnkiService ankiSerivce, IEBookService ebookService, IDialogService dialogService,
+            IAnkiService ankiSerivce, IDialogService dialogService,
             IStemmerServiceFactory stemmerServiceFactory, ITextProcessingService textProcessingService,
             StatusViewModel statusViewModel)
         {
             _translationService = translationService;
             _ankiService = ankiSerivce;
-            _ebookService = ebookService;
             _dialogService = dialogService;
             _stemmerServiceFactory = stemmerServiceFactory;
             _textProcessingService = textProcessingService;
@@ -79,19 +77,6 @@ namespace VocabHelper.WPF.Business.ViewModels
         private void ClearData()
         {
             cardCandidates.Clear();
-        }
-
-        [RelayCommand]
-        private void LoadEBook()
-        {
-            var result = _dialogService.OpenFile();
-            if (!result.Success)
-            {
-                return;
-            }
-            var words = _ebookService.GetAllWords(result.File, false);
-            var language = result.Language.Value;
-            ProcessText(words, language);
         }
 
         [RelayCommand]
@@ -223,54 +208,6 @@ namespace VocabHelper.WPF.Business.ViewModels
             }
 
             return fields;
-        }
-
-        [RelayCommand]
-        private void LoadRawText()
-        {
-            var result = _dialogService.GetRawText();
-            if (result.success)
-            {
-                // do something with the language
-                var words = _ebookService.GetAllWordsFromText(result.text, false);
-                ProcessText(words, result.language);
-            }
-        }
-
-        private void ProcessText(IEnumerable<EBookWordModel> words, LanguageId language)
-        {
-            Language = language;
-            IStemmerService stemmerService = _stemmerServiceFactory.GetStemmer(language);
-            Dictionary<string, CardCandidateViewModel> stemmedWords = [];
-            foreach (var word in words)
-            {
-                var stemmedWord = stemmerService.Stem(word.Word.ToLower(), word.Sentence);
-
-                if (stemmedWords.TryGetValue(stemmedWord, out CardCandidateViewModel candidate))
-                {
-                    candidate.Frequency++;
-                    if (!candidate.Variations.Contains(word.Word.ToLower()))
-                    {
-                        candidate.Variations.Add(word.Word.ToLower());
-                    }
-                }
-                else
-                {
-                    stemmedWords[stemmedWord] = new CardCandidateViewModel()
-                    {
-                        Word = stemmedWord,
-                        Sentence = word.Sentence,
-                        Index = word.Index,
-                        Variations = [stemmedWord],
-                        Frequency = 1
-                    };
-                }
-            }
-
-            foreach (var candidate in stemmedWords.Values.OrderBy(x => x.Index))
-            {
-                CardCandidates.Add(candidate);
-            }
         }
     }
 }

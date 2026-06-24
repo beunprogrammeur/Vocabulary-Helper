@@ -17,9 +17,6 @@
         <DataTemplate DataType="{x:Type vm:MessageBoxViewModel}">
             <v:MessageBoxView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:LoadEBookViewModel}">
-            <v:LoadEBookView />
-        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:EBookViewModel}">
             <v:EBookView />
         </DataTemplate>

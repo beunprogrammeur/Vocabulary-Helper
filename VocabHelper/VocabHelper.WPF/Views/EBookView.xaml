@@ -19,7 +19,6 @@
         
         <Menu Grid.Row="0" Grid.ColumnSpan="999">
             <MenuItem Header="_Load">
-                <MenuItem Header="_Load Ebook" Command="{Binding LoadEBookCommand}" />
                 <MenuItem Header="_Load Raw Text" Command="{Binding LoadRawTextCommand}" />
                 <MenuItem Header="_Clear" Command="{Binding ClearDataCommand}" />
             </MenuItem>

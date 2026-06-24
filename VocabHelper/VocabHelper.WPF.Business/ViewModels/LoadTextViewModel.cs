@@ -31,11 +31,21 @@ namespace VocabHelper.WPF.Business.ViewModels
         [RelayCommand]
         public void Accept()
         {
-            _textProcessingService.ProcessText(RawText, ChosenLanguage, _statusViewModel.WordRepository);
-            _statusViewModel.WordRepository.Language = ChosenLanguage;
+            var repository = _textProcessingService.ProcessText(RawText, ChosenLanguage, _statusViewModel.WordRepository);
+            _statusViewModel.WordRepository = repository;
             _statusViewModel.UpdateWordRepository();
 
             CloseDialog?.Invoke(this, new CloseDialogEventArgs(true));
+        }
+
+        [RelayCommand]
+        public void FileDropped(string[] files)
+        {
+            string? epub = files.FirstOrDefault(x => x.EndsWith(".epub", StringComparison.OrdinalIgnoreCase));
+            if(!string.IsNullOrEmpty(epub) && File.Exists(epub))
+            {
+                RawText = _textProcessingService.ReadEpub(epub);
+            }
         }
     }
 }

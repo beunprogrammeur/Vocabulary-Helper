@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using HtmlAgilityPack;
+using System.Text;
+using System.Text.RegularExpressions;
+using VersOne.Epub;
 using VocabHelper.Core;
 using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.Models;
@@ -12,6 +15,22 @@ namespace VocabHelper.WPF.Business.Services
         public TextProcessingService(IStemmerServiceFactory stemmerServiceFactory)
         {
             _stemmerServiceFactory = stemmerServiceFactory;
+        }
+
+        public string ReadEpub(string epub)
+        {
+            StringBuilder builder = new ();
+            EpubBook book = EpubReader.ReadBook(epub);
+
+            foreach(EpubLocalTextContentFile file in book.ReadingOrder)
+            {
+                HtmlDocument document = new();
+                document.LoadHtml(file.Content);
+                builder.Append(document.DocumentNode.InnerText);
+                builder.AppendLine();
+            }
+
+            return builder.ToString();
         }
 
         public VocabularyRepositoryModel ProcessText(string text, LanguageId language, VocabularyRepositoryModel? repository = null)
@@ -37,6 +56,7 @@ namespace VocabHelper.WPF.Business.Services
                 }
             }
 
+            repository.Language = language;
             return repository;
         }
 

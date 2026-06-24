@@ -7,6 +7,7 @@
              xmlns:behaviours="clr-namespace:VocabHelper.WPF.Behaviours"
              xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit"
              mc:Ignorable="d" 
+             xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
@@ -20,8 +21,11 @@
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0">Language</Label>
         <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding ChosenLanguage}" />
-        <avalonEdit:TextEditor Grid.Row="1" Grid.ColumnSpan="999" FontFamily="Consolas" ShowLineNumbers="True" WordWrap="True" behaviours:AvalonEditBehaviour.BoundText="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" />
-
+        <avalonEdit:TextEditor AllowDrop="True" Grid.Row="1" Grid.ColumnSpan="999" FontFamily="Consolas" ShowLineNumbers="True" WordWrap="True" behaviours:AvalonEditBehaviour.BoundText="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" >
+            <i:Interaction.Behaviors>
+                <behaviours:DragDropFilesBehaviour FileDroppedCommand="{Binding FileDroppedCommand}"/>
+            </i:Interaction.Behaviors>
+        </avalonEdit:TextEditor>
 
         <Button Grid.Row="2" Grid.ColumnSpan="999" Command="{Binding AcceptCommand}">Accept</Button>
     </Grid>
