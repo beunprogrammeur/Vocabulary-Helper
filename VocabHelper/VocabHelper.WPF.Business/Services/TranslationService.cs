@@ -15,7 +15,7 @@ namespace VocabHelper.WPF.Business.Services
         // Limit concurrency to avoid Google throttling
         private readonly SemaphoreSlim _limiter = new(3);
 
-        public async Task<string> TranslateAsync(string text, LanguageId sourceLanguage, LanguageId targetLanguage)
+        public async Task<string> TranslateAsync(string text, Language sourceLanguage, Language targetLanguage)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return string.Empty;
@@ -48,13 +48,13 @@ namespace VocabHelper.WPF.Business.Services
             }
         }
 
-        private string ConvertLanguageIdToGoogleTranslateCode(LanguageId languageId)
+        private string ConvertLanguageIdToGoogleTranslateCode(Language languageId)
         {
             return languageId switch
             {
-                LanguageId.English => "en",
-                LanguageId.Korean => "ko",   // corrected: Google uses "ko", not "kr"
-                LanguageId.Indonesian => "id",
+                Language.English => "en",
+                Language.Korean => "ko",   // corrected: Google uses "ko", not "kr"
+                Language.Indonesian => "id",
                 _ => throw new NotSupportedException($"Language {languageId} is not supported.")
             };
         }

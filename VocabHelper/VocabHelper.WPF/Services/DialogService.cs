@@ -16,17 +16,6 @@ namespace VocabHelper.WPF.Services
             _windowFactory = windowFactory;
         }
 
-        public (bool Success, LanguageId? Language, string? File) OpenFile()
-        {
-            var window = _windowFactory.GetLoadEBookWindow();
-            if (window.ShowDialog() == true)
-            {
-                return (true, window.ViewModel.ChosenLanguage, window.ViewModel.FilePath);
-            }
-
-            return (false, null, null);
-        }
-
         public AnkiMappingModel? GetMapping(AnkiMappingModel previousMapping)
         {
             var window = _windowFactory.GetCandidateToCardMappingWindow();
@@ -77,7 +66,7 @@ namespace VocabHelper.WPF.Services
             return null;
         }
 
-        public (bool success, string? text, LanguageId language) GetRawText()
+        public (bool success, string? text, Language language) GetRawText()
         {
             var window = _windowFactory.GetLoadRawTextWindow();
             if (window.ShowDialog() == true)

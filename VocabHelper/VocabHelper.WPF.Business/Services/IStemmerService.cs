@@ -8,6 +8,6 @@ namespace VocabHelper.WPF.Business.Services
 {
     public interface IStemmerService
     {
-        string Stem(string word);
+        string Stem(string word, string sentence);
     }
 }

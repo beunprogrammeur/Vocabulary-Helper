@@ -1,6 +1,6 @@
 ﻿namespace VocabHelper.Core
 {
-    public enum LanguageId
+    public enum Language
     {
         Korean,
         Indonesian,

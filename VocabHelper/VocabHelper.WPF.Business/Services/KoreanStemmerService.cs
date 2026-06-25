@@ -2,7 +2,7 @@
 {
     internal class KoreanStemmerService : IStemmerService
     {
-        public string Stem(string word)
+        public string Stem(string word, string sentence)
         {
             return word;
         }

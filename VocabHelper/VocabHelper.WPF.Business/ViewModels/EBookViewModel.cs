@@ -14,13 +14,12 @@ namespace VocabHelper.WPF.Business.ViewModels
     {
         private readonly ITranslationService _translationService;
         private readonly IAnkiService _ankiService;
-        private readonly IEBookService _ebookService;
         private readonly IDialogService _dialogService;
-        private readonly IStemmerServiceFactory _stemmerServiceFactory;
+        private readonly StatusViewModel _statusViewModel;
 
         private AnkiMappingModel _mappings;
 
-        [ObservableProperty] private LanguageId language;
+        [ObservableProperty] private Language language;
         [ObservableProperty] private int totalTranslations;
         [ObservableProperty] private int completedTranslations;
         [ObservableProperty] private ObservableCollection<CardCandidateViewModel> cardCandidates = [];
@@ -31,14 +30,32 @@ namespace VocabHelper.WPF.Business.ViewModels
         public string Title { get; set; } = "Anki text importer";
 
         public EBookViewModel(ITranslationService translationService,
-            IAnkiService ankiSerivce, IEBookService ebookService, IDialogService dialogService,
-            IStemmerServiceFactory stemmerServiceFactory)
+            IAnkiService ankiSerivce, IDialogService dialogService,
+            StatusViewModel statusViewModel)
         {
             _translationService = translationService;
             _ankiService = ankiSerivce;
-            _ebookService = ebookService;
             _dialogService = dialogService;
-            _stemmerServiceFactory = stemmerServiceFactory;
+            _statusViewModel = statusViewModel;
+
+            _statusViewModel.WordRepositoryUpdated += OnWordRepositoryUpdated;
+            Language = Core.Language.English; // TODO: move this to a settings thing (statusviewmodel for now).
+        }
+
+        private void OnWordRepositoryUpdated(object? sender, System.EventArgs e)
+        {
+            CardCandidates.Clear();
+            foreach (var word in _statusViewModel.WordRepository.Words.Values.OrderBy(x => x.Index))
+            {
+                CardCandidates.Add(new CardCandidateViewModel()
+                {
+                    Word = word.Word,
+                    Sentence = word.Sentence,
+                    Index = word.Index,
+                    Frequency = word.Count,
+                    Variations = new ObservableCollection<string>(word.Variations)
+                });
+            }
         }
 
         [RelayCommand]
@@ -58,19 +75,6 @@ namespace VocabHelper.WPF.Business.ViewModels
         }
 
         [RelayCommand]
-        private void LoadEBook()
-        {
-            var result = _dialogService.OpenFile();
-            if (!result.Success)
-            {
-                return;
-            }
-            var words = _ebookService.GetAllWords(result.File, false);
-            var language = result.Language.Value;
-            ProcessText(words, language);
-        }
-
-        [RelayCommand]
         private async Task TranslateCards()
         {
             var activeCandidates = cardCandidates.Where(x => !x.IsIgnored);
@@ -84,8 +88,8 @@ namespace VocabHelper.WPF.Business.ViewModels
                     candidate.WordTranslation =
                         await _translationService.TranslateAsync(
                             candidate.Word,
-                            Language,
-                            LanguageId.English);
+                            _statusViewModel.WordRepository.Language,
+                            Core.Language.English);
                     CompletedTranslations++;
                 }
 
@@ -95,8 +99,8 @@ namespace VocabHelper.WPF.Business.ViewModels
                     candidate.SentenceTranslation =
                         await _translationService.TranslateAsync(
                             candidate.Sentence,
-                            Language,
-                            LanguageId.English);
+                            _statusViewModel.WordRepository.Language,
+                            Core.Language.English);
                 }
             }
         }
@@ -148,7 +152,7 @@ namespace VocabHelper.WPF.Business.ViewModels
             }
 
 
-            AnkiBulkImportModel ankiBulkImportModel = new AnkiBulkImportModel();
+            AnkiBulkImportModel ankiBulkImportModel = new();
 
             foreach(var candidate in CardCandidates.Where(x => !x.IsIgnored && !string.IsNullOrEmpty(x.WordTranslation)))
             {
@@ -199,54 +203,6 @@ namespace VocabHelper.WPF.Business.ViewModels
             }
 
             return fields;
-        }
-
-        [RelayCommand]
-        private void LoadRawText()
-        {
-            var result = _dialogService.GetRawText();
-            if (result.success)
-            {
-                // do something with the language
-                var words = _ebookService.GetAllWordsFromText(result.text, false);
-                ProcessText(words, result.language);
-            }
-        }
-
-        private void ProcessText(IEnumerable<EBookWordModel> words, LanguageId language)
-        {
-            Language = language;
-            IStemmerService stemmerService = _stemmerServiceFactory.GetStemmer(language);
-            Dictionary<string, CardCandidateViewModel> stemmedWords = [];
-            foreach (var word in words)
-            {
-                var stemmedWord = stemmerService.Stem(word.Word.ToLower());
-
-                if (stemmedWords.TryGetValue(stemmedWord, out CardCandidateViewModel candidate))
-                {
-                    candidate.Frequency++;
-                    if (!candidate.Variations.Contains(word.Word.ToLower()))
-                    {
-                        candidate.Variations.Add(word.Word.ToLower());
-                    }
-                }
-                else
-                {
-                    stemmedWords[stemmedWord] = new CardCandidateViewModel()
-                    {
-                        Word = stemmedWord,
-                        Sentence = word.Sentence,
-                        Index = word.Index,
-                        Variations = [stemmedWord],
-                        Frequency = 1
-                    };
-                }
-            }
-
-            foreach (var candidate in stemmedWords.Values.OrderBy(x => x.Index))
-            {
-                CardCandidates.Add(candidate);
-            }
         }
     }
 }
