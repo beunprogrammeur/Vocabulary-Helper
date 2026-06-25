@@ -10,7 +10,7 @@ Helps creating anki decks from ebooks
 
 # The idea
 Running the app allows you to load all deck (names) from anki.
-Opening an ebook will read the following from the book:
+Opening an ebook (or paste a news article etc.) will read the following from the book:
 * each `word` in each `sentence`
 
 This means that for learning the vocabulary in your book, you now have: words and example sentences.
@@ -26,21 +26,15 @@ Are all the same word, just conjugated differently. by stemming, they all become
 
 using the `match` checkbox at the anki decks grid, we can select which decks to search through for duplicates. if a word has been studied before, we can automatically ignore it from the list. this becomes extra powerful on your 2nd book in the same language etc.
 
-after that, another TODO is a translation service integration. this allows for instance google translate to translate all not-ignored entries (words and example sentences) to english or whatever you desire.
-at last, we choose a target deck and bulk insert our words in there.
 
-Don't forget this is a lot of TODO's and this project is still at the early stages.
+## LLM
 
-what we have so far:
-* a window
-* anki integration
-    * read deck names
-    * read card info (but we don't parse it yet)
-* read words from an ebook
-    * list the words in our grid
+Unfortunately, languages seem to be very diverse, to support both indonesian and korean, we would need 2 different algoritms, many of which all lean on LLMs or python scripts with a gazillion dependencies. Ultimately, I've chosen the route of locally running a 'languages specific' LLM which can be downloaded for free, running _on your machine_ without telemetry etc. I'm not the biggest fan of using LLMs like this, but for educational purposes (the anki decks), this doesn't sound half bad.
 
-# TODO list
-So the todo's are still:
-* translate words
-* stem / filter words
-* import into anki deck
+To start the server, follow the instructions in [Docker/models/help.md]
+* download the model
+* install docker
+* run the powershell script
+
+once the model is running AND you have installed Anki + the `AnkiConnect` plugin, the app will be able to talk to your anki app to read and insert cards etc.
+

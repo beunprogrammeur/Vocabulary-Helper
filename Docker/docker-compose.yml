@@ -1,0 +1,33 @@
+services:
+  llama-cpp-server:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: llama-cpp-server
+    environment:
+      - CUDA_VISIBLE_DEVICES=${CUDA_DEVICE}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - GGML_CUDA_GRAPH_OPT=1
+    volumes:
+      - ./models:/models
+    ports:
+      - "${LLAMA_PORT}:${LLAMA_PORT}"
+    command: >
+      -m /models/${MODEL_NAME}
+      --host 0.0.0.0
+      --port ${LLAMA_PORT}
+      -ngl -1
+      --ctx-size ${MODEL_CONTEXT}
+      --min-p ${MODEL_MIN_P}
+      --parallel 2
+      --threads 8
+      --batch-size 2048
+      --ubatch-size 512
+      --flash-attn on
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
