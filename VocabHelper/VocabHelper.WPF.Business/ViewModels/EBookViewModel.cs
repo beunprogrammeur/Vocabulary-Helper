@@ -9,12 +9,14 @@ using VocabHelper.WPF.Business.Services;
 
 namespace VocabHelper.WPF.Business.ViewModels
 {
-    [RegisterService]
+    [RegisterService(RegistrationType.Singleton)]
     public partial class EBookViewModel : BaseViewModel, IDialogViewModel
     {
         private readonly ITranslationService _translationService;
         private readonly IAnkiService _ankiService;
         private readonly IDialogService _dialogService;
+        private readonly ILemmatisationService _lemmatisationService;
+        private readonly IDispatcher _dispatcher;
         private readonly StatusViewModel _statusViewModel;
 
         private AnkiMappingModel _mappings;
@@ -24,6 +26,7 @@ namespace VocabHelper.WPF.Business.ViewModels
         [ObservableProperty] private int completedTranslations;
         [ObservableProperty] private ObservableCollection<CardCandidateViewModel> cardCandidates = [];
         [ObservableProperty] private ObservableCollection<AnkiDeckViewModel> ankiDecks = [];
+        [ObservableProperty] private ObservableCollection<QueuedSentenceModel> queuedSentences = [];
 
         public event EventHandler<CloseDialogEventArgs> CloseDialog;
 
@@ -31,15 +34,49 @@ namespace VocabHelper.WPF.Business.ViewModels
 
         public EBookViewModel(ITranslationService translationService,
             IAnkiService ankiSerivce, IDialogService dialogService,
-            StatusViewModel statusViewModel)
+            StatusViewModel statusViewModel, ILemmatisationService lemmatisationService, IDispatcher dispatcher)
         {
             _translationService = translationService;
             _ankiService = ankiSerivce;
             _dialogService = dialogService;
             _statusViewModel = statusViewModel;
+            _lemmatisationService = lemmatisationService;
+            _dispatcher = dispatcher;
 
             _statusViewModel.WordRepositoryUpdated += OnWordRepositoryUpdated;
             Language = Core.Language.English; // TODO: move this to a settings thing (statusviewmodel for now).
+
+            _lemmatisationService.ItemLemmatised += OnLemmatisationItemComplete;
+        }
+
+        private void OnLemmatisationItemComplete(object? sender, LemmatisationEventArgs e)
+        {
+            foreach(var result in e.LemmatisationResult.LemmatisedWords)
+            {
+                string word = result.RootWord.ToLower();
+                CardCandidateViewModel candidate = cardCandidates.FirstOrDefault(x => x.Word == word);
+                if(candidate != null)
+                {
+                    candidate.Frequency++;
+                }
+                else
+                {
+                    candidate = new CardCandidateViewModel()
+                    {
+                        Word = word,
+                        WordTranslation = result.Translation,
+                        Sentence = e.LemmatisationResult.SourceSentence,
+                        SentenceTranslation = e.LemmatisationResult.TargetSentence,
+                        Frequency = 1,
+                        Index = CardCandidates.Count
+                    };
+                }
+
+                _dispatcher.Invoke(() => {
+                    CardCandidates.Add(candidate);
+                    QueuedSentences.Remove(e.QueuedSentence);
+                });
+            }
         }
 
         private void OnWordRepositoryUpdated(object? sender, System.EventArgs e)
@@ -72,6 +109,12 @@ namespace VocabHelper.WPF.Business.ViewModels
         private void ClearData()
         {
             cardCandidates.Clear();
+        }
+
+        [RelayCommand]
+        private void Lemmatise()
+        {
+            _lemmatisationService.Lemmatise(QueuedSentences.ToList(), CancellationToken.None);
         }
 
         [RelayCommand]

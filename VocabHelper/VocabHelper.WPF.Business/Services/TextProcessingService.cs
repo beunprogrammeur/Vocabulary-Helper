@@ -17,6 +17,21 @@ namespace VocabHelper.WPF.Business.Services
             _stemmerServiceFactory = stemmerServiceFactory;
         }
 
+        public List<string> GetSentences(string text)
+        {
+            List<string> sentences = [];
+
+            Regex regexSentence = new("([^.!?]+)[.!?]", RegexOptions.Singleline | RegexOptions.Compiled);
+            string normalized = Regex.Replace(text, @"\s+", " ");
+            foreach (Match matchSentence in regexSentence.Matches(normalized))
+            {
+                string sentence = matchSentence.Value;
+                sentences.Add(sentence);
+            }
+
+            return sentences;
+        }
+
         public string ReadEpub(string epub)
         {
             StringBuilder builder = new ();

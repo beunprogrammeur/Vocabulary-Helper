@@ -7,5 +7,6 @@ namespace VocabHelper.WPF.Business.Services
     {
         string ReadEpub(string epub);
         VocabularyRepositoryModel ProcessText(string text, Language language, VocabularyRepositoryModel? repository = null);
+        List<string> GetSentences(string text);
     }
 }

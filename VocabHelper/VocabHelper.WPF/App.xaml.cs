@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 using VocabHelper.WPF.Business.ViewModels.Persistence;
 using VocabHelper.WPF.Extensions;
 using VocabHelper.WPF.Factories;
@@ -25,7 +26,7 @@ namespace VocabHelper.WPF
 
             builder.Services.AddDiscoveredServices();
 
-            builder.Services.AddSingleton<AppSettings>((services) => LoadPersistence());
+            builder.Services.AddSingleton<PersistentSettings>((services) => LoadPersistence());
 
             _host = builder.Build();
 
@@ -37,16 +38,16 @@ namespace VocabHelper.WPF
                 .ShowDialog();
         }
 
-        private AppSettings LoadPersistence()
+        private PersistentSettings LoadPersistence()
         {
-            AppSettings appSettings = new ();
+            PersistentSettings appSettings = new ();
 
             if (File.Exists(_persistenceFilePath))
             {
                 var jsonContent = File.ReadAllText(_persistenceFilePath);
                 try
                 {
-                    appSettings = JsonSerializer.Deserialize<AppSettings>(jsonContent);
+                    appSettings = JsonSerializer.Deserialize<PersistentSettings>(jsonContent);
                 }
                 catch { /* log? */ }
             }
@@ -94,7 +95,7 @@ namespace VocabHelper.WPF
         {
             try
             {
-                AppSettings appSettings = _host.Services.GetRequiredService<AppSettings>();
+                PersistentSettings appSettings = _host.Services.GetRequiredService<PersistentSettings>();
                 var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
                 string jsonContent = JsonSerializer.Serialize(appSettings, jsonOptions);
 

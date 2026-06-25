@@ -16,14 +16,14 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
+
         <Menu Grid.Row="0" Grid.ColumnSpan="999">
             <MenuItem Header="_Load">
-                <MenuItem Header="_Load Raw Text" Command="{Binding LoadRawTextCommand}" />
                 <MenuItem Header="_Clear" Command="{Binding ClearDataCommand}" />
             </MenuItem>
             <MenuItem Header="_Translate">
                 <MenuItem Header="_Google Translate" Command="{Binding TranslateCardsCommand}" />
+                <MenuItem Header="LLM Lemmatise" Command="{Binding LemmatiseCommand}" />
             </MenuItem>
             <MenuItem Header="_Anki">
                 <MenuItem Header="Load Decks" Command="{Binding LoadAnkiDecksAsyncCommand}"/>
@@ -53,6 +53,12 @@
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
-
+        <GroupBox Header="Queued Sentences" Grid.Row="2">
+            <DataGrid ItemsSource="{Binding QueuedSentences}" CanUserAddRows="False" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Queued sentences for lemmatisation and translation" Binding="{Binding Text}" IsReadOnly="True" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
     </Grid>
 </UserControl>

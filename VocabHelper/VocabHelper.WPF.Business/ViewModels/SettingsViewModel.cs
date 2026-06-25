@@ -6,8 +6,8 @@ namespace VocabHelper.WPF.Business.ViewModels
     [RegisterService]
     public partial class SettingsViewModel : BaseViewModel
     {
-        public AppSettings AppSettings { get; }
-        public SettingsViewModel(AppSettings appSettings)
+        public PersistentSettings AppSettings { get; }
+        public SettingsViewModel(PersistentSettings appSettings)
         {
             AppSettings = appSettings;
         }
