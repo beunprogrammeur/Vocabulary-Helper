@@ -6,8 +6,8 @@ namespace VocabHelper.WPF.Business.ViewModels.Persistence
     public partial class LanguageSettings : BaseViewModel
     {
         [ObservableProperty]
-        private Language sourceLanguage;
+        private string sourceLanguage;
         [ObservableProperty]
-        private Language targetLanguage;
+        private string targetLanguage;
     }
 }

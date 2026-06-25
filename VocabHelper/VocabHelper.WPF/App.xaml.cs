@@ -68,14 +68,15 @@ namespace VocabHelper.WPF
 
                             string portLine = File.ReadAllLines(envFilePath).FirstOrDefault(x => x.StartsWith("LLAMA_PORT"));
                             int equalIndex = portLine.IndexOf('=');
+
+                            ushort apiPort = 8083; // default
                             if(equalIndex != -1 && ushort.TryParse(portLine.Substring(equalIndex + 1), out ushort port))
                             {
-                                appSettings.ApiSettings.Port = port;
+                                apiPort = port;
                             }
-                            else
-                            {
-                                appSettings.ApiSettings.Port = _apiDefaultPort;
-                            }
+
+                            appSettings.ApiSettings.ApiEndpoint = $"http://localhost:{apiPort}/v1/chat/completions";
+
                             break;
                         }
 

@@ -27,7 +27,7 @@
                 TBD
             </TabItem>
             <TabItem Header="Settings">
-                TBD
+                <v:SettingsView DataContext="{Binding SettingsViewModel}" />
             </TabItem>
         </TabControl>
         <v:StatusView Grid.Row="1" Grid.ColumnSpan="999" DataContext="{Binding StatusViewModel}" />
