@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using VocabHelper.WPF.Business.Services;
 using VocabHelper.WPF.Business.ViewModels.Persistence;
 using VocabHelper.WPF.Extensions;
 using VocabHelper.WPF.Factories;
@@ -40,7 +41,8 @@ namespace VocabHelper.WPF
 
         private PersistentSettings LoadPersistence()
         {
-            PersistentSettings appSettings = new ();
+            PersistentSettings appSettings = new();
+            var logger = _host.Services.GetRequiredService<ILoggerService>();
 
             if (File.Exists(_persistenceFilePath))
             {
@@ -49,7 +51,10 @@ namespace VocabHelper.WPF
                 {
                     appSettings = JsonSerializer.Deserialize<PersistentSettings>(jsonContent);
                 }
-                catch { /* log? */ }
+                catch (Exception ex )
+                {
+                    logger.LogException(ex);
+                }
             }
             else
             {
@@ -85,7 +90,10 @@ namespace VocabHelper.WPF
                         directory = Path.GetDirectoryName(directory);
                     }
                 }
-                catch { /* log */ }
+                catch (Exception ex)
+                {
+                    logger.LogException(ex);
+                }
             }
 
             return appSettings;
@@ -101,7 +109,10 @@ namespace VocabHelper.WPF
 
                 File.WriteAllText(_persistenceFilePath, jsonContent);
             }
-            catch { /* log? */ }
+            catch (Exception ex)
+            {
+                _host.Services.GetRequiredService<ILoggerService>().LogException(ex);
+            }
         }
     }
 }

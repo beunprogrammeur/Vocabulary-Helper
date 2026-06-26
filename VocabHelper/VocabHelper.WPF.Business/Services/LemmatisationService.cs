@@ -1,6 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using VocabHelper.Interfaces;
 using VocabHelper.WPF.Business.EventArgs;
@@ -18,12 +16,14 @@ namespace VocabHelper.WPF.Business.Services
         private readonly string _systemPrompt;
         private readonly string _sourceLanguage;
         private readonly string _targetLanguage;
+        private readonly ILoggerService _loggerService;
 
         public event EventHandler<LemmatisationEventArgs> ItemLemmatised;
 
-        public LemmatisationService(PersistentSettings settings)
+        public LemmatisationService(PersistentSettings settings, ILoggerService loggerService)
         {
             _apiSettings = settings.ApiSettings;
+            _loggerService = loggerService;
 
             _httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(60) };
             _endpointURL = _apiSettings.ApiEndpoint;
@@ -32,11 +32,8 @@ namespace VocabHelper.WPF.Business.Services
             _targetLanguage = settings.LanguageSettings.TargetLanguage;
         }
 
-        public void Lemmatise(IReadOnlyList<QueuedSentenceModel> queue, CancellationToken cancellationToken)
-        {
-            // Start het werk onmiddellijk op de achtergrond zonder de UI te blokkeren
+        public void Lemmatise(IReadOnlyList<QueuedSentenceModel> queue, CancellationToken cancellationToken) =>
             Task.Run(() => DoWorkAsync(queue, cancellationToken), cancellationToken);
-        }
 
         private async void DoWorkAsync(IReadOnlyList<QueuedSentenceModel> queue, CancellationToken cancellationToken)
         {
@@ -54,22 +51,17 @@ namespace VocabHelper.WPF.Business.Services
 
                 try
                 {
-                    // Vraag Aya Expanse om de linguïstische analyse
                     var resultModel = await CallLlamaApiAsync(currentItem.Text, cancellationToken);
-
                     if (resultModel != null)
                     {
-                        // Vul de originele bron-zin in voor de administratie
                         resultModel.SourceSentence = currentItem.Text;
 
-                        // Vuur het event af! De luisteraar krijgt het resultaat direct mee
                         OnItemLemmatised(currentItem, resultModel);
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[Lemmatisation Error]: {ex.Message}");
-                    // TODO: ILOGGER
+                    _loggerService.LogException(ex);
                 }
             }
 
@@ -108,22 +100,7 @@ namespace VocabHelper.WPF.Business.Services
             if (string.IsNullOrWhiteSpace(rawJsonContent)) return null;
             string sanitisedJson = SanitiseMarkdownFromJson(rawJsonContent);
 
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine();
-            builder.AppendLine("---");
-            builder.AppendLine();
-
-            builder.AppendLine(sanitisedJson);
-
-            builder.AppendLine();
-            builder.AppendLine("---");
-            builder.AppendLine();
-
-            using FileStream fs = new FileStream("log.log", FileMode.Append);
-            using (var writer = new StreamWriter(fs))
-            {
-                writer.WriteLine(sanitisedJson);
-            }
+            _loggerService.LogInformation(rawJsonContent);
 
             using var innerDoc = JsonDocument.Parse(sanitisedJson);
             var result = new LemmatisationResultModel
@@ -166,9 +143,7 @@ namespace VocabHelper.WPF.Business.Services
             return stringBuilder.ToString().Trim();
         }
 
-        protected virtual void OnItemLemmatised(QueuedSentenceModel queuedSentence, LemmatisationResultModel lemmatisationResult)
-        {
+        protected virtual void OnItemLemmatised(QueuedSentenceModel queuedSentence, LemmatisationResultModel lemmatisationResult) =>
             ItemLemmatised?.Invoke(this, new LemmatisationEventArgs(queuedSentence, lemmatisationResult));
-        }
     }
 }

@@ -24,7 +24,7 @@
                 <v:CandidateToCardMappingView DataContext="{Binding CandidateToCardMappingViewModel}" />
             </TabItem>
             <TabItem Header="Logs">
-                TBD
+                <v:LogView DataContext="{Binding LogViewModel}" />
             </TabItem>
             <TabItem Header="Settings">
                 <v:SettingsView DataContext="{Binding SettingsViewModel}" />
